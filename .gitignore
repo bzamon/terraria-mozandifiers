@@ -1,0 +1,48 @@
+# tModLoader / C# / Visual Studio .gitignore
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Generated mod files
+*.tmod
+# Optional: Keep the following if you want to share your compiled mod
+# !*.tmod
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
+# Ignore .NET test results
+TestResults/
+
+# Mono auto generated files
+mono_crash.*
+
+# Misc
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.settings
+.DS_Store
+Thumbs.db
