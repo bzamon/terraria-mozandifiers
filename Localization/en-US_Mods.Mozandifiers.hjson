@@ -1,1 +1,52 @@
+Prefixes: {
+	MozanTestPrefix.DisplayName: Mozan Test Prefix
+	ColossalPrefix.DisplayName: Colossal
+	AttunedPrefix.DisplayName: Attuned
 
+	BreachingPrefix: {
+		DisplayName: Breaching
+		ArmorPenetrationTooltip: +{0} armor penetration
+	}
+
+	SkirmishingPrefix.DisplayName: Skirmishing
+
+	EchoingPrefix: {
+		DisplayName: Echoing
+		EchoTooltip: "{0}% chance to echo attacks for {1}% damage"
+	}
+}
+
+Configs: {
+	PrefixTuningConfig: {
+		WeaponPrefixTuning: Header
+
+		EchoChancePercent: {
+			Label: Echo Chance (%)
+			Tooltip: Chance for the Echoing prefix to fire an extra echo shot.
+		}
+
+		EchoChance: {
+			Label: Echo Chance
+			Tooltip: ""
+		}
+
+		ColossalSizePercent: {
+			Label: Colossal Size (%)
+			Tooltip: Final size multiplier for the Colossal prefix. 130 means the weapon is 30% larger.
+		}
+
+		DisplayName: Prefix Tuning Config
+		Headers.WeaponPrefixTuning: Weapon Prefix Tuning Header
+
+		ColossalScaleMultiplier: {
+			Label: Colossal Scale Multiplier
+			Tooltip: ""
+		}
+	}
+}
+
+Projectiles: {
+	EchoingMeleeSlashProjectile.DisplayName: Echoing Melee Slash Projectile
+	EchoingMeleeProjectileReplay.DisplayName: Echoing Melee Projectile Replay
+	EchoingMeleeSpearReplayProjectile.DisplayName: Echoing Melee Spear Replay Projectile
+}

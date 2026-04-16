@@ -1,1 +1,10 @@
-Modify this file with a description of your mod.
+Adds a first set of custom weapon prefixes to Terraria through tModLoader.
+
+Current version includes:
+- Colossal
+- Echoing
+- Attuned
+- Breaching
+- Skirmishing
+
+Includes mod config sliders for Echo chance and Colossal size.

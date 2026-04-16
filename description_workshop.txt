@@ -1,1 +1,15 @@
-This description will show up on the steam page, check out https://steamcommunity.com/comment/Guide/formattinghelp.
+[h1]Mozan's Arcane Modifiers[/h1]
+
+Adds a first wave of custom weapon prefixes for Terraria with clear tradeoffs and configurable tuning.
+
+[b]Current features:[/b]
+- 5 custom weapon prefixes: Colossal, Echoing, Attuned, Breaching, and Skirmishing
+- Echoing can fire an extra echo shot
+- Colossal increases weapon size and power at the cost of speed
+- Mod configuration sliders for Echo chance and Colossal size
+
+[b]Current scope:[/b]
+Focused on weapon prefixes only. Accessory and armor prefixes are not implemented yet.
+
+[b]Version:[/b]
+0.2
