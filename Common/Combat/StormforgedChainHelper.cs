@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Mozandifiers.Common.Players;
@@ -44,17 +45,22 @@ internal static class StormforgedChainHelper
 			return;
 		}
 
+		SpawnStormforgedBurst(initialTarget.Center, 1.15f);
+
 		HashSet<int> hitTargets = [initialTarget.whoAmI];
 		NPC currentTarget = initialTarget;
 		int chainDamage = (int)System.MathF.Max(1f, System.MathF.Round(sourceDamage * chainDamageDecay));
 
 		for (int jump = 0; jump < maxChainJumps && chainDamage > 0; jump++) {
 			NPC nextTarget = FindNextStormforgedTarget(currentTarget.Center, hitTargets, chainRangePixels);
+			
 			if (nextTarget == null) {
-				break;
+
+                break;
 			}
 
-			SpawnStormforgedDust(currentTarget.Center, nextTarget.Center);
+            SpawnStormforgedDust(currentTarget.Center, nextTarget.Center);
+			SpawnStormforgedBurst(nextTarget.Center, 0.95f);
 
 			stormforgedPlayer.SuppressStormforgedChain = true;
 			try {
@@ -75,20 +81,27 @@ internal static class StormforgedChainHelper
 		NPC closestTarget = null;
 		float closestDistanceSquared = chainRangePixels * chainRangePixels;
 
-		for (int i = 0; i < Main.maxNPCs; i++) {
-			NPC candidate = Main.npc[i];
+
+
+
+        foreach (NPC candidate in Main.npc) {
+			//NPC candidate = Main.npc[i];
+
 			if (!candidate.active
 				|| candidate.friendly
 				|| candidate.dontTakeDamage
-				|| !candidate.CanBeChasedBy()
+				|| (!candidate.CanBeChasedBy() && !candidate.immortal)
 				|| hitTargets.Contains(candidate.whoAmI)) {
-				continue;
+
+
+                continue;
 			}
 
 			float distanceSquared = Vector2.DistanceSquared(origin, candidate.Center);
 			if (distanceSquared > closestDistanceSquared) {
-				continue;
+                continue;
 			}
+
 
 			closestDistanceSquared = distanceSquared;
 			closestTarget = candidate;
@@ -100,14 +113,45 @@ internal static class StormforgedChainHelper
 	private static void SpawnStormforgedDust(Vector2 start, Vector2 end)
 	{
 		Vector2 offset = end - start;
-		int dustCount = 8;
+		Vector2 direction = offset.SafeNormalize(Vector2.UnitX);
+		Vector2 tangent = direction.RotatedBy(MathHelper.PiOver2);
+		int dustCount = System.Math.Max(8, (int)(offset.Length() / 24f));
 
 		for (int i = 0; i <= dustCount; i++) {
-			Vector2 position = Vector2.Lerp(start, end, i / (float)dustCount);
-			Dust dust = Dust.NewDustPerfect(position, DustID.Electric);
-			dust.noGravity = true;
-			dust.velocity = offset.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.35f) * Main.rand.NextFloat(0.4f, 1.1f);
-			dust.scale = 0.9f;
+			float progress = i / (float)dustCount;
+			float zigZagOffset = (i % 2 == 0 ? 1f : -1f) * 4f;
+			Vector2 position = Vector2.Lerp(start, end, progress) + tangent * zigZagOffset;
+
+			Dust electricDust = Dust.NewDustPerfect(position, DustID.Electric);
+			electricDust.noGravity = true;
+			electricDust.velocity = direction.RotatedByRandom(0.35f) * Main.rand.NextFloat(0.4f, 1.1f);
+			electricDust.scale = 0.95f;
+
+			if (i % 2 == 0) {
+				Dust sparkDust = Dust.NewDustPerfect(position + tangent * 1.5f, DustID.BlueTorch);
+				sparkDust.noGravity = true;
+				sparkDust.velocity = tangent * Main.rand.NextFloat(-0.5f, 0.5f);
+				sparkDust.scale = 0.75f;
+				sparkDust.fadeIn = 0.85f;
+			}
+		}
+	}
+
+	private static void SpawnStormforgedBurst(Vector2 position, float scale)
+	{
+		Lighting.AddLight(position, 0.18f * scale, 0.28f * scale, 0.34f * scale);
+
+		for (int i = 0; i < 6; i++) {
+			Vector2 velocity = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(0.9f, 1.9f) * scale;
+
+			Dust electricDust = Dust.NewDustPerfect(position, DustID.Electric, velocity);
+			electricDust.noGravity = true;
+			electricDust.scale = 1f * scale;
+
+			Dust sparkDust = Dust.NewDustPerfect(position, DustID.BlueTorch, velocity * 0.65f);
+			sparkDust.noGravity = true;
+			sparkDust.scale = 0.75f * scale;
+			sparkDust.fadeIn = 0.9f;
 		}
 	}
 }

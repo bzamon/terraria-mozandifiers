@@ -14,7 +14,7 @@ public sealed class ColossalPrefix : WeaponPrefix
 
 	public override bool CanRoll(Item item)
 	{
-		return IsSwingingMeleeWeapon(item);
+		return false;
 	}
 
 	public override void SetStats(

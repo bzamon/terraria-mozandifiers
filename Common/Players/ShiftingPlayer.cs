@@ -37,6 +37,8 @@ public sealed class ShiftingPlayer : ModPlayer
 			return;
 		}
 
+		EmitShiftingAura();
+
 		if (IsAuthoritative() && currentTick >= ShiftExpireTick) {
 			RollNewSimulation(Player.HeldItem, heldMode, currentTick);
 		}
@@ -196,6 +198,7 @@ public sealed class ShiftingPlayer : ModPlayer
 
 		string text = Language.GetTextValue($"Mods.{Mod.Name}.Prefixes.ShiftingPrefix.CombatText", simulationName);
 		CombatText.NewText(Player.Hitbox, new Color(195, 160, 255), text);
+		SpawnShiftingRerollEffect();
 	}
 
 	private static bool TryGetHeldShiftingWeaponMode(Player player, out ShiftingWeaponMode weaponMode)
@@ -215,5 +218,49 @@ public sealed class ShiftingPlayer : ModPlayer
 	private static bool IsAuthoritative()
 	{
 		return Main.netMode != NetmodeID.MultiplayerClient;
+	}
+
+	private void EmitShiftingAura()
+	{
+		Vector2 auraCenter = Player.MountedCenter + new Vector2(Player.direction * 10f, -6f);
+		Color accentColor = WeaponPrefixVisuals.GetShiftingAccentColor(ActiveWeaponMode);
+		float pulse = 0.82f + 0.18f * (0.5f + 0.5f * System.MathF.Sin(Main.GlobalTimeWrappedHourly * 8f + Player.whoAmI * 0.3f));
+
+		Lighting.AddLight(auraCenter, Vector3.Lerp(
+			WeaponPrefixVisuals.ShiftingBaseColor.ToVector3(),
+			accentColor.ToVector3(),
+			0.45f) * (0.16f * pulse));
+
+		if (Main.GameUpdateCount % 8ul == 0) {
+			Vector2 offset = Main.rand.NextVector2Circular(8f, 10f);
+			Dust dust = Dust.NewDustPerfect(
+				auraCenter + offset,
+				DustID.PurpleTorch,
+				new Vector2(0f, -0.18f) + offset.SafeNormalize(Vector2.UnitY) * 0.18f,
+				0,
+				accentColor,
+				0.9f * pulse);
+			dust.noGravity = true;
+			dust.fadeIn = 0.95f;
+		}
+	}
+
+	private void SpawnShiftingRerollEffect()
+	{
+		Vector2 center = Player.MountedCenter;
+		Color accentColor = WeaponPrefixVisuals.GetShiftingAccentColor(ActiveWeaponMode);
+
+		for (int i = 0; i < 10; i++) {
+			float angle = MathHelper.TwoPi * i / 10f;
+			Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(1f, 2.2f);
+
+			Dust baseDust = Dust.NewDustPerfect(center, DustID.PurpleTorch, velocity, 0, WeaponPrefixVisuals.ShiftingBaseColor, 1f);
+			baseDust.noGravity = true;
+			baseDust.fadeIn = 1f;
+
+			Dust accentDust = Dust.NewDustPerfect(center, DustID.PurpleTorch, velocity * 0.75f, 0, accentColor, 0.85f);
+			accentDust.noGravity = true;
+			accentDust.fadeIn = 0.95f;
+		}
 	}
 }

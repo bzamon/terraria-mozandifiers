@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 using Mozandifiers.Content.Prefixes.Weapons;
@@ -8,6 +9,7 @@ namespace Mozandifiers.Common.Players;
 public sealed class SpinboundPlayer : ModPlayer
 {
 	private readonly Dictionary<int, SpinboundCadenceState> spinboundCadenceByItemType = [];
+	private readonly Dictionary<int, Queue<SpinboundShotContext>> spinboundShotContextsByItemType = [];
 
 	public bool RegisterSpinboundShot(Item item)
 	{
@@ -42,6 +44,46 @@ public sealed class SpinboundPlayer : ModPlayer
 		return true;
 	}
 
+	public bool ResolveSpinboundShot(Item item, Vector2 velocity, bool shifted)
+	{
+		if (item == null || item.IsAir) {
+			return false;
+		}
+
+		bool triggered = RegisterSpinboundShot(item, shifted);
+		int cadenceKey = GetCadenceKey(item.type, shifted);
+		if (!spinboundShotContextsByItemType.TryGetValue(cadenceKey, out Queue<SpinboundShotContext> contexts)) {
+			contexts = [];
+			spinboundShotContextsByItemType[cadenceKey] = contexts;
+		}
+
+		contexts.Enqueue(new SpinboundShotContext {
+			Velocity = velocity,
+			Triggered = triggered
+		});
+		return triggered;
+	}
+
+	public bool TryConsumeSpinboundShotContext(Item item, bool shifted, out Vector2 velocity, out bool triggered)
+	{
+		velocity = Vector2.Zero;
+		triggered = false;
+		if (item == null || item.IsAir) {
+			return false;
+		}
+
+		int cadenceKey = GetCadenceKey(item.type, shifted);
+		if (!spinboundShotContextsByItemType.TryGetValue(cadenceKey, out Queue<SpinboundShotContext> contexts)
+			|| contexts.Count == 0) {
+			return false;
+		}
+
+		SpinboundShotContext context = contexts.Dequeue();
+		velocity = context.Velocity;
+		triggered = context.Triggered;
+		return true;
+	}
+
 	private static int GetCadenceKey(int itemType, bool shifted)
 	{
 		return (itemType << 1) | (shifted ? 1 : 0);
@@ -51,5 +93,11 @@ public sealed class SpinboundPlayer : ModPlayer
 	{
 		public int NextGapIndex { get; set; }
 		public int ShotsRemainingUntilTrigger { get; set; }
+	}
+
+	private struct SpinboundShotContext
+	{
+		public Vector2 Velocity { get; set; }
+		public bool Triggered { get; set; }
 	}
 }

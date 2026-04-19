@@ -9,8 +9,8 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 public sealed class StormforgedPrefix : WeaponPrefix
 {
 	public const int MaxChainJumps = 3;
-	public const float ChainProcChance = 0.25f;
-	public const float ChainRangePixels = 360f;
+	public const float ChainProcChance = 0.33f;
+	public const float ChainRangePixels = 160f;
 	public const float ChainDamageDecay = 0.65f;
 
 	protected override float PrefixRollChance => 0.7f;

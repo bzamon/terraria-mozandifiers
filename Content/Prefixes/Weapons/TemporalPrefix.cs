@@ -9,6 +9,7 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 public sealed class TemporalPrefix : WeaponPrefix
 {
 	public const float AttackSpeedMultiplier = 2f;
+	public const float ProjectileSpeedMultiplier = 2f;
 
 	protected override float PrefixRollChance => 0.6f;
 	protected override float PrefixValueMultiplier => 1.5f;
@@ -17,7 +18,7 @@ public sealed class TemporalPrefix : WeaponPrefix
 
 	public override bool CanRoll(Item item)
 	{
-		return IsStandardDirectCombatWeapon(item);
+		return IsStandardWeapon(item);
 	}
 
 	public override void SetStats(
@@ -31,7 +32,7 @@ public sealed class TemporalPrefix : WeaponPrefix
 	{
 		damageMult *= (1f / AttackSpeedMultiplier);
 		useTimeMult *= (1f / AttackSpeedMultiplier);
-        shootSpeedMult *= (AttackSpeedMultiplier/2);
+		shootSpeedMult *= ProjectileSpeedMultiplier;
 	}
 
 	protected override IEnumerable<TooltipLine> GetExtraTooltipLines(Item item)
@@ -41,6 +42,7 @@ public sealed class TemporalPrefix : WeaponPrefix
 			$"{Name}Temporal",
 			Language.GetTextValue(
 				$"Mods.{Mod.Name}.Prefixes.{Name}.TemporalTooltip",
-				(int)((AttackSpeedMultiplier - 1f) * 100f)));
+				(int)((AttackSpeedMultiplier - 1f) * 100f),
+				(int)((ProjectileSpeedMultiplier - 1f) * 100f)));
 	}
 }

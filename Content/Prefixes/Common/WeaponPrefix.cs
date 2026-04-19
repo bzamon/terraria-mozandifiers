@@ -135,10 +135,6 @@ public abstract class WeaponPrefix : BasePrefix
 			return EchoingWeaponMode.MagicProjectile;
 		}
 
-		//if (IsSwingingMeleeWeapon(item)) {
-		//	return EchoingWeaponMode.MeleeSwing;
-		//}
-
 		if (IsProjectileMeleeWeapon(item)) {
 			return GetProjectileMeleeEchoMode(ContentSamples.ProjectilesByType[item.shoot], item.channel);
 		}

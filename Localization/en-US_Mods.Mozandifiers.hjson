@@ -5,6 +5,8 @@ Prefixes: {
 	BreachingPrefix: {
 		DisplayName: Breaching
 		ArmorPenetrationTooltip: +{0} armor penetration
+		BreachTooltip: Crushing hits can breach resistant targets and heavy defenses ({0}+ defense)
+		SizeTooltip: Heavy swing weapons gain +{0}% size
 	}
 
 	SkirmishingPrefix.DisplayName: Skirmishing
@@ -31,7 +33,7 @@ Prefixes: {
 
 	TemporalPrefix: {
 		DisplayName: Temporal
-		TemporalTooltip: +{0}% attack speed
+		TemporalTooltip: +{0}% attack speed; projectile weapons also gain +{1}% projectile speed
 	}
 
 	DesperatePrefix: {
@@ -80,32 +82,26 @@ Configs: {
 		}
 
 		EchoChance: {
-			Tooltip: ""
+			Tooltip: Fractional value used internally for Echoing proc rolls.
 			Label: Echo Chance
 		}
 
 		ColossalSizePercent: {
-			Label: Colossal Size (%)
-			Tooltip: Final size multiplier for the Colossal prefix. 130 means the weapon is 30% larger.
+			Label: Siege Weapon Size (%)
+			Tooltip: Final size multiplier used when Breaching expands heavy swing weapons. 130 means they are 30% larger before Breaching tuning.
 		}
 
 		DisplayName: Prefix Tuning Config
 		Headers.WeaponPrefixTuning: Weapon Prefix Tuning Header
 
 		ColossalScaleMultiplier: {
-			Tooltip: ""
-			Label: Colossal Scale Multiplier
+			Tooltip: Final scale multiplier source used internally by Breaching's heavy melee size bonus.
+			Label: Siege Size Multiplier
 		}
 	}
 }
 
 Projectiles: {
-	EchoingMeleeSlashProjectile.DisplayName: Echoing Melee Slash Projectile
-	EchoingMeleeProjectileReplay.DisplayName: Echoing Melee Projectile Replay
-	EchoingMeleeSpearReplayProjectile.DisplayName: Echoing Melee Spear Replay Projectile
-	PuppyPetProjectile.DisplayName: Puppy Pet Projectile
-	TestPetProjectile.DisplayName: Test Pet Projectile
-	ExamplePuppyProjectile.DisplayName: Example Puppy Projectile
 	AmeliaProjectile.DisplayName: Amelia Projectile
 	LudovicaProjectile.DisplayName: Ludovica Projectile
 }

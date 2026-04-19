@@ -16,10 +16,12 @@ public sealed class SpinboundPrefix : WeaponPrefix
 	public const int MaxGoldenSpinTier = 5;
 	public const float GoldenRatio = 1.618034f;
 	public const float InverseGoldenRatio = 0.618034f;
-	public const float DistanceToSpeedTolerance = 0.24f;
-	public const float ComponentRatioTolerance = 0.42f;
-	public const float AlignmentTolerance = 0.16f;
-	public const float MinimumGoldenRatioDenominator = 1f;
+	public const float LowGoldenAngleDegrees = 31.72f;
+	public const float HighGoldenAngleDegrees = 58.28f;
+	public const float VelocityRatioTolerance = 0.25f;
+	public const float AngleToleranceDegrees = 8f;
+	public const float AnglePrecisionToleranceDegrees = 3f;
+	public const float SpeedRatioTolerance = 0.35f;
 
 	protected override int ArmorPenetrationBonus => 6;
 	protected override float PrefixRollChance => 0.65f;

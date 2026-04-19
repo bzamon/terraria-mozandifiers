@@ -36,7 +36,6 @@ internal enum ShiftingSimulationId : byte
 internal static class ShiftingSimulationCatalog
 {
 	private static readonly ShiftingSimulationId[] MeleePool = [
-		ShiftingSimulationId.Colossal,
 		ShiftingSimulationId.Breaching,
 		ShiftingSimulationId.Desperate,
 		ShiftingSimulationId.Radiant,
@@ -46,6 +45,7 @@ internal static class ShiftingSimulationCatalog
 	];
 
 	private static readonly ShiftingSimulationId[] RangedPool = [
+		ShiftingSimulationId.Breaching,
 		ShiftingSimulationId.Skirmishing,
 		ShiftingSimulationId.Headshot,
 		ShiftingSimulationId.Desperate,
@@ -169,7 +169,7 @@ internal static class ShiftingSimulationCatalog
 	internal static int GetShiftedArmorPenetrationBonus(ShiftingSimulationId simulationId)
 	{
 		return simulationId switch {
-			ShiftingSimulationId.Breaching => ScaleRoundedInt(10),
+			ShiftingSimulationId.Breaching => ScaleRoundedInt(BreachingPrefix.ArmorPenetrationValue),
 			_ => 0
 		};
 	}
@@ -178,7 +178,7 @@ internal static class ShiftingSimulationCatalog
 	{
 		return simulationId switch {
 			ShiftingSimulationId.Colossal => ScaleValue(5f),
-			ShiftingSimulationId.Breaching => ScaleValue(5f),
+			ShiftingSimulationId.Breaching => ScaleValue(BreachingPrefix.CritBonus),
 			ShiftingSimulationId.Skirmishing => ScaleValue(4f),
 			ShiftingSimulationId.Desperate => ScaleValue(5f),
 			ShiftingSimulationId.Radiant => ScaleValue(2f),
@@ -197,7 +197,7 @@ internal static class ShiftingSimulationCatalog
 	{
 		return simulationId switch {
 			ShiftingSimulationId.Colossal => ScaleMultiplierFromNeutral(1.25f),
-			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(1.14f),
+			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.DamageMultiplier),
 			ShiftingSimulationId.Attuned => ScaleMultiplierFromNeutral(0.84f),
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(0.9f),
 			ShiftingSimulationId.Desperate => ScaleMultiplierFromNeutral(1.05f),
@@ -216,7 +216,7 @@ internal static class ShiftingSimulationCatalog
 	{
 		return simulationId switch {
 			ShiftingSimulationId.Colossal => ScaleMultiplierFromNeutral(1.2f),
-			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(1.12f),
+			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.KnockbackMultiplier),
 			ShiftingSimulationId.Attuned => ScaleMultiplierFromNeutral(0.9f),
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(0.85f),
 			ShiftingSimulationId.Radiant => ScaleMultiplierFromNeutral(0.95f),
@@ -231,7 +231,7 @@ internal static class ShiftingSimulationCatalog
 	{
 		return simulationId switch {
 			ShiftingSimulationId.Colossal => ScaleMultiplierFromNeutral(1.25f),
-			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(1.18f),
+			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.UseTimeMultiplierValue),
 			ShiftingSimulationId.Attuned => ScaleMultiplierFromNeutral(0.88f),
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(0.8f),
 			ShiftingSimulationId.Headshot => ScaleMultiplierFromNeutral(1.12f),
@@ -267,6 +267,7 @@ internal static class ShiftingSimulationCatalog
 	{
 		return simulationId switch {
 			ShiftingSimulationId.Colossal => ScaleMultiplierFromNeutral(colossalScaleMultiplier),
+			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.GetMergedScaleMultiplier(colossalScaleMultiplier)),
 			_ => 1f
 		};
 	}
