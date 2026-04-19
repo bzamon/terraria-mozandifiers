@@ -122,7 +122,6 @@ internal static class ShiftingSimulationCatalog
 	internal static string GetDisplayName(string modName, ShiftingSimulationId simulationId)
 	{
 		string prefixKey = simulationId switch {
-			ShiftingSimulationId.Colossal => "ColossalPrefix",
 			ShiftingSimulationId.Breaching => "BreachingPrefix",
 			ShiftingSimulationId.Attuned => "AttunedPrefix",
 			ShiftingSimulationId.Skirmishing => "SkirmishingPrefix",
@@ -177,7 +176,6 @@ internal static class ShiftingSimulationCatalog
 	internal static float GetShiftedCritBonus(ShiftingSimulationId simulationId)
 	{
 		return simulationId switch {
-			ShiftingSimulationId.Colossal => ScaleValue(5f),
 			ShiftingSimulationId.Breaching => ScaleValue(BreachingPrefix.CritBonus),
 			ShiftingSimulationId.Skirmishing => ScaleValue(4f),
 			ShiftingSimulationId.Desperate => ScaleValue(5f),
@@ -196,7 +194,6 @@ internal static class ShiftingSimulationCatalog
 	internal static float GetShiftedDamageMultiplier(ShiftingSimulationId simulationId)
 	{
 		return simulationId switch {
-			ShiftingSimulationId.Colossal => ScaleMultiplierFromNeutral(1.25f),
 			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.DamageMultiplier),
 			ShiftingSimulationId.Attuned => ScaleMultiplierFromNeutral(0.84f),
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(0.9f),
@@ -215,7 +212,6 @@ internal static class ShiftingSimulationCatalog
 	internal static float GetShiftedKnockbackMultiplier(ShiftingSimulationId simulationId)
 	{
 		return simulationId switch {
-			ShiftingSimulationId.Colossal => ScaleMultiplierFromNeutral(1.2f),
 			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.KnockbackMultiplier),
 			ShiftingSimulationId.Attuned => ScaleMultiplierFromNeutral(0.9f),
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(0.85f),
@@ -230,7 +226,6 @@ internal static class ShiftingSimulationCatalog
 	internal static float GetShiftedUseSpeedMultiplier(ShiftingSimulationId simulationId)
 	{
 		return simulationId switch {
-			ShiftingSimulationId.Colossal => ScaleMultiplierFromNeutral(1.25f),
 			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.UseTimeMultiplierValue),
 			ShiftingSimulationId.Attuned => ScaleMultiplierFromNeutral(0.88f),
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(0.8f),
@@ -266,7 +261,6 @@ internal static class ShiftingSimulationCatalog
 	internal static float GetShiftedScaleMultiplier(ShiftingSimulationId simulationId, float colossalScaleMultiplier)
 	{
 		return simulationId switch {
-			ShiftingSimulationId.Colossal => ScaleMultiplierFromNeutral(colossalScaleMultiplier),
 			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.GetMergedScaleMultiplier(colossalScaleMultiplier)),
 			_ => 1f
 		};

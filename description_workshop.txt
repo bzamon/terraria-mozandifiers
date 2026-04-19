@@ -3,7 +3,7 @@
 Adds custom weapon prefixes for Terraria with clear tradeoffs and configurable tuning, plus two included bonus vanity pets based on my real dogs.
 
 [b]Current features:[/b]
-- 15 custom weapon prefixes: Colossal, Echoing, Attuned, Breaching, Skirmishing, Sanguine, Radiant, Stormforged, Temporal, Desperate, Siphoning, Catalytic, Headshot, Spinbound, and Shifting
+- 14 custom weapon prefixes: Echoing, Attuned, Breaching, Skirmishing, Sanguine, Radiant, Stormforged, Temporal, Desperate, Siphoning, Catalytic, Headshot, Spinbound, and Shifting
 - 2 bonus vanity dog pets: Amelia and Ludovica
 - Echoing can trigger an extra echo attack
 - Sanguine heals for a portion of damage dealt
@@ -12,8 +12,8 @@ Adds custom weapon prefixes for Terraria with clear tradeoffs and configurable t
 - Headshot rewards long-range precision with scaling damage and stronger crits
 - Spinbound empowers Fibonacci-timed shots and can trigger Golden Spin amplification
 - Shifting periodically rewrites itself into stronger temporary modifier states while in combat
-- Colossal increases weapon size and power at the cost of speed
-- 2 server-side mod config sliders for Echo chance and Colossal size
+- Breaching now carries the heavy siege size bonus on slow swing weapons
+- 2 server-side mod config sliders for Echo chance and Breaching heavy size
 
 [b]Current scope:[/b]
 Focused on weapon prefixes, with Amelia and Ludovica included as bonus vanity pets. Accessory and armor prefixes are not implemented.
