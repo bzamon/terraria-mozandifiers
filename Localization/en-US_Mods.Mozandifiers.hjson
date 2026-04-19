@@ -1,5 +1,4 @@
 Prefixes: {
-	MozanTestPrefix.DisplayName: Mozan Test Prefix
 	ColossalPrefix.DisplayName: Colossal
 	AttunedPrefix.DisplayName: Attuned
 
@@ -14,6 +13,61 @@ Prefixes: {
 		DisplayName: Echoing
 		EchoTooltip: "{0}% chance to echo attacks for {1}% damage"
 	}
+
+	SanguinePrefix: {
+		DisplayName: Sanguine
+		LifeStealTooltip: Heals for {0}% of damage dealt
+	}
+
+	RadiantPrefix: {
+		DisplayName: Radiant
+		RadiantTooltip: Emits light and inflicts On Fire! for {0} seconds
+	}
+
+	StormforgedPrefix: {
+		DisplayName: Stormforged
+		StormforgedTooltip: "{0}% chance to chain lightning to up to {1} nearby enemies"
+	}
+
+	TemporalPrefix: {
+		DisplayName: Temporal
+		TemporalTooltip: +{0}% attack speed
+	}
+
+	DesperatePrefix: {
+		DisplayName: Desperate
+		DesperateTooltip: Up to +{0}% damage at low life
+	}
+
+	SiphoningPrefix: {
+		DisplayName: Siphoning
+		SiphoningTooltip: Restores up to {0} mana on hit, max {1} mana per second
+	}
+
+	CatalyticPrefix: {
+		DisplayName: Catalytic
+		CatalyticTooltip: Marks enemies for {0} seconds; next hit consumes the mark for +{1}% damage
+	}
+
+	HeadshotPrefix: {
+		DisplayName: Headshot
+		DistanceDamageTooltip: Up to +{0}% damage over {1} px
+		CritDamageTooltip: Critical hits deal +{0}% damage, or +{1}% after {2} px
+	}
+
+	SpinboundPrefix: {
+		DisplayName: Spinbound
+		SpinboundTooltip: Fibonacci cadence empowers releases for +{0}% damage and +{1}% crit damage
+		GoldenSpinTooltip: Golden Spin geometry can amplify the Spinbound payoff up to {0}x
+	}
+
+	ShiftingPrefix: {
+		DisplayName: Shifting
+		ShiftingTooltip: Rewrites itself every {0} seconds while in combat; fades after {1} seconds out of combat
+		ShiftPowerTooltip: Simulated modifiers are applied at {0}% strength
+		CurrentTooltip: Currently shifting: {0} ({1}%)
+		CombatText: Shifting: {0}
+	}
 }
 
 Configs: {
@@ -22,12 +76,12 @@ Configs: {
 
 		EchoChancePercent: {
 			Label: Echo Chance (%)
-			Tooltip: Chance for the Echoing prefix to fire an extra echo shot.
+			Tooltip: Chance for the Echoing prefix to trigger an extra echo attack.
 		}
 
 		EchoChance: {
-			Label: Echo Chance
 			Tooltip: ""
+			Label: Echo Chance
 		}
 
 		ColossalSizePercent: {
@@ -39,8 +93,8 @@ Configs: {
 		Headers.WeaponPrefixTuning: Weapon Prefix Tuning Header
 
 		ColossalScaleMultiplier: {
-			Label: Colossal Scale Multiplier
 			Tooltip: ""
+			Label: Colossal Scale Multiplier
 		}
 	}
 }
@@ -49,4 +103,33 @@ Projectiles: {
 	EchoingMeleeSlashProjectile.DisplayName: Echoing Melee Slash Projectile
 	EchoingMeleeProjectileReplay.DisplayName: Echoing Melee Projectile Replay
 	EchoingMeleeSpearReplayProjectile.DisplayName: Echoing Melee Spear Replay Projectile
+	PuppyPetProjectile.DisplayName: Puppy Pet Projectile
+	TestPetProjectile.DisplayName: Test Pet Projectile
+	ExamplePuppyProjectile.DisplayName: Example Puppy Projectile
+	AmeliaProjectile.DisplayName: Amelia Projectile
+	LudovicaProjectile.DisplayName: Ludovica Projectile
+}
+
+Buffs: {
+	AmeliaBuff: {
+		DisplayName: Amelia
+		Description: Amelia is following you!
+	}
+
+	LudovicaBuff: {
+		DisplayName: Ludovica
+		Description: Ludovica is following you!
+	}
+}
+
+Items: {
+	AmeliaItem: {
+		DisplayName: Amelia
+		Tooltip: Summons Amelia as a pet
+	}
+
+	LudovicaItem: {
+		DisplayName: Ludovica
+		Tooltip: Summons Ludovica as a pet
+	}
 }

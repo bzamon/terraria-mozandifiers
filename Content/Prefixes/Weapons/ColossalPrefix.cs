@@ -26,10 +26,10 @@ public sealed class ColossalPrefix : WeaponPrefix
 		ref float manaMult,
 		ref int critBonus)
 	{
-		damageMult *= 1.28f;
+		damageMult *= 1.25f;
 		knockbackMult *= 1.2f;
 		useTimeMult *= 1.25f;
 		scaleMult *= PrefixTuningConfig.Instance.ColossalScaleMultiplier;
-		critBonus -= 5;
+		critBonus += 5;
 	}
 }

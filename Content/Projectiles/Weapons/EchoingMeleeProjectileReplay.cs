@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -55,26 +54,6 @@ public sealed class EchoingMeleeProjectileReplay : ModProjectile
 	public override string Texture => $"Terraria/Images/Projectile_{ProjectileID.WoodenArrowFriendly}";
 
 	private EchoingMeleeReplayStyle ReplayStyle => (EchoingMeleeReplayStyle)(int)Projectile.ai[1];
-
-    //public override void SetDefaults()
-    //{
-    //Projectile.width = 24;
-    //Projectile.height = 24;
-    //Projectile.aiStyle = -1;
-    //Projectile.friendly = true;
-    //Projectile.penetrate = -1;
-    //Projectile.tileCollide = false;
-    //Projectile.ignoreWater = true;
-    //Projectile.usesLocalNPCImmunity = true;
-    //Projectile.localNPCHitCooldown = -1;
-    //Projectile.DamageType = DamageClass.Melee;
-    //Projectile.timeLeft = 600;
-    //}
-
-    public override void OnSpawn(IEntitySource source)
-    {
-        Main.NewText($"EchoingMeleeProjectileReplay spawned - ai0: {Projectile.ai[0]} - ai1: {Projectile.ai[1]}"); // Debug message, can be removed later
-    }
 	
 	public override bool? CanDamage()
 	{

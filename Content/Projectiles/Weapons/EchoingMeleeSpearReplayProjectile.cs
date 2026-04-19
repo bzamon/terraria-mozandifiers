@@ -62,7 +62,6 @@ public sealed class EchoingMeleeSpearReplayProjectile : ModProjectile
 			Projectile.owner);
 
 		if (spearIndex >= 0 && spearIndex < Main.maxProjectiles) {
-			WeaponPrefixGlobalItem.ConfigureIndependentHitTracking(ContentSamples.ProjectilesByType[sourceProjectileType], Main.projectile[spearIndex]);
 			Main.projectile[spearIndex].netUpdate = true;
 		}
 

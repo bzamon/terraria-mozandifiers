@@ -1,15 +1,22 @@
 [h1]Mozan's Arcane Modifiers[/h1]
 
-Adds a first wave of custom weapon prefixes for Terraria with clear tradeoffs and configurable tuning.
+Adds custom weapon prefixes for Terraria with clear tradeoffs and configurable tuning, plus two included bonus vanity pets based on my real dogs.
 
 [b]Current features:[/b]
-- 5 custom weapon prefixes: Colossal, Echoing, Attuned, Breaching, and Skirmishing
-- Echoing can fire an extra echo shot
+- 15 custom weapon prefixes: Colossal, Echoing, Attuned, Breaching, Skirmishing, Sanguine, Radiant, Stormforged, Temporal, Desperate, Siphoning, Catalytic, Headshot, Spinbound, and Shifting
+- 2 bonus vanity dog pets: Amelia and Ludovica
+- Echoing can trigger an extra echo attack
+- Sanguine heals for a portion of damage dealt
+- Siphoning restores mana on hit for magic weapons
+- Catalytic rewards follow-up magic hits with bonus damage
+- Headshot rewards long-range precision with scaling damage and stronger crits
+- Spinbound empowers Fibonacci-timed shots and can trigger Golden Spin amplification
+- Shifting periodically rewrites itself into stronger temporary modifier states while in combat
 - Colossal increases weapon size and power at the cost of speed
-- Mod configuration sliders for Echo chance and Colossal size
+- 2 server-side mod config sliders for Echo chance and Colossal size
 
 [b]Current scope:[/b]
-Focused on weapon prefixes only. Accessory and armor prefixes are not implemented yet.
+Focused on weapon prefixes, with Amelia and Ludovica included as bonus vanity pets. Accessory and armor prefixes are not implemented.
 
 [b]Version:[/b]
 0.2

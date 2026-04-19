@@ -55,27 +55,32 @@ public abstract class WeaponPrefix : BasePrefix
 		yield break;
 	}
 
-	protected static bool IsMagicWeapon(Item item)
+	internal static bool IsMagicWeapon(Item item)
 	{
 		return IsStandardWeapon(item) && item.CountsAsClass(DamageClass.Magic) && item.mana > 0;
 	}
 
-	protected static bool IsRangedWeapon(Item item)
+	internal static bool IsRangedWeapon(Item item)
 	{
 		return IsStandardWeapon(item) && item.CountsAsClass(DamageClass.Ranged);
 	}
 
-	protected static bool IsProjectileWeapon(Item item)
+	internal static bool IsProjectileWeapon(Item item)
 	{
 		return item.shoot > ProjectileID.None;
 	}
 
-	protected static bool IsProjectileMeleeWeapon(Item item)
+	internal static Projectile GetProjectileSample(Item item)
+	{
+		return ContentSamples.ProjectilesByType[item.shoot];
+	}
+
+	internal static bool IsProjectileMeleeWeapon(Item item)
 	{
 		return IsStandardWeapon(item) && item.CountsAsClass(DamageClass.Melee) && IsProjectileWeapon(item);
 	}
 
-	protected static bool IsSwingingMeleeWeapon(Item item)
+	internal static bool IsSwingingMeleeWeapon(Item item)
 	{
 		return IsStandardWeapon(item)
 			&& item.CountsAsClass(DamageClass.Melee)
@@ -85,12 +90,39 @@ public abstract class WeaponPrefix : BasePrefix
 			&& !IsProjectileWeapon(item);
 	}
 
-	protected static bool IsHeavyWeapon(Item item)
+	internal static bool IsHeavyWeapon(Item item)
 	{
 		return IsStandardWeapon(item)
 			&& !item.CountsAsClass(DamageClass.Summon)
 			&& !item.CountsAsClass(DamageClass.SummonMeleeSpeed)
 			&& item.useAnimation >= 25;
+	}
+
+	internal static bool IsStandardProjectileCombatWeapon(Item item)
+	{
+		return (IsRangedWeapon(item) || IsMagicWeapon(item))
+			&& IsProjectileWeapon(item)
+			&& !item.channel;
+	}
+
+	internal static bool IsStandardMagicProjectileWeapon(Item item)
+	{
+		return IsMagicWeapon(item)
+			&& IsProjectileWeapon(item)
+			&& !item.channel;
+	}
+
+	internal static bool IsStandardDirectCombatWeapon(Item item)
+	{
+		return IsSwingingMeleeWeapon(item) || IsStandardProjectileCombatWeapon(item);
+	}
+
+	internal static bool IsStandardCombatWeapon(Item item)
+	{
+		return IsStandardWeapon(item)
+			&& (item.CountsAsClass(DamageClass.Melee)
+				|| item.CountsAsClass(DamageClass.Ranged)
+				|| item.CountsAsClass(DamageClass.Magic));
 	}
 
 	internal static EchoingWeaponMode GetEchoingWeaponMode(Item item)
@@ -103,9 +135,9 @@ public abstract class WeaponPrefix : BasePrefix
 			return EchoingWeaponMode.MagicProjectile;
 		}
 
-		if (IsSwingingMeleeWeapon(item)) {
-			return EchoingWeaponMode.MeleeSwing;
-		}
+		//if (IsSwingingMeleeWeapon(item)) {
+		//	return EchoingWeaponMode.MeleeSwing;
+		//}
 
 		if (IsProjectileMeleeWeapon(item)) {
 			return GetProjectileMeleeEchoMode(ContentSamples.ProjectilesByType[item.shoot], item.channel);
@@ -134,7 +166,6 @@ public abstract class WeaponPrefix : BasePrefix
 	{
 		return mode is EchoingWeaponMode.RangedProjectile
 			or EchoingWeaponMode.MagicProjectile
-			or EchoingWeaponMode.MeleeSwing
 			or EchoingWeaponMode.MeleeThrust
 			or EchoingWeaponMode.MeleeBoomerang;
 	}

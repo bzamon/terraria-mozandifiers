@@ -25,10 +25,10 @@ public sealed class SkirmishingPrefix : WeaponPrefix
 		ref float manaMult,
 		ref int critBonus)
 	{
-		damageMult *= 0.86f;
+		damageMult *= 0.90f;
 		knockbackMult *= 0.85f;
-		useTimeMult *= 0.82f;
-		shootSpeedMult *= 1.18f;
-		critBonus -= 4;
+		useTimeMult *= 0.80f;
+		shootSpeedMult *= 1.20f;
+		critBonus += 4;
 	}
 }

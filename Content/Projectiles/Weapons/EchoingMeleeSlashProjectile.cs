@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -29,28 +28,6 @@ public sealed class EchoingMeleeSlashProjectile : ModProjectile
 	private int cachedFrames;
 
 	public override string Texture => $"Terraria/Images/Projectile_{ProjectileID.WoodenArrowFriendly}";
-
-	//public override void SetDefaults()
-	//{
- //       Player owner = Main.player[Projectile.owner];
-
- //       int swingFrames = owner.itemTimeMax > 100 ? owner.itemTimeMax : 100;
-        
-	//	Projectile.width = 72;
-	//	Projectile.height = 72;
-	//	Projectile.aiStyle = -1;
-	//	Projectile.friendly = true;
-	//	Projectile.penetrate = -1;
-	//	Projectile.tileCollide = false;
-	//	Projectile.ignoreWater = true;
-	//	Projectile.ownerHitCheck = false;
-	//	Projectile.usesLocalNPCImmunity = true;
-	//	Projectile.localNPCHitCooldown = -1;
-	//	Projectile.timeLeft = swingFrames;
-        
- //       Projectile.DamageType = DamageClass.Melee;
-
-	//}
 
 	public override void AI()
 	{
