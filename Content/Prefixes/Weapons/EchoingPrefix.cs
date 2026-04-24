@@ -9,7 +9,16 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class EchoingPrefix : WeaponPrefix
 {
-	public const float EchoDamageMultiplier = 0.5f;
+	public const float FractureIDamageMultiplier = 0.45f;
+	public const float FractureIIDamageMultiplier = 0.35f;
+	public const float FractureIIIDamageMultiplier = 0.25f;
+	public const float FractureIAngleVarianceDegrees = 2f;
+	public const float FractureIIAngleVarianceDegrees = 4f;
+	public const float FractureIIIAngleVarianceDegrees = 6f;
+	public const int FractureIIDelayMinFrames = 1;
+	public const int FractureIIDelayMaxFrames = 3;
+	public const int FractureIIIDelayMinFrames = 2;
+	public const int FractureIIIDelayMaxFrames = 5;
 
 	protected override float PrefixRollChance => 0.7f;
 	protected override float PrefixValueMultiplier => 1.55f;
@@ -38,11 +47,21 @@ public sealed class EchoingPrefix : WeaponPrefix
 	protected override IEnumerable<TooltipLine> GetExtraTooltipLines(Item item)
 	{
 		yield return new TooltipLine(
-				Mod,
-				$"{Name}EchoChance",
-				Language.GetTextValue(
-					$"Mods.{Mod.Name}.Prefixes.{Name}.EchoTooltip",
-					PrefixTuningConfig.Instance.EchoChancePercent,
-					(int)(EchoDamageMultiplier * 100f)));
+			Mod,
+			$"{Name}FractureChance",
+			Language.GetTextValue(
+				$"Mods.{Mod.Name}.Prefixes.{Name}.FractureTooltip",
+				PrefixTuningConfig.Instance.FractureIChancePercent,
+				PrefixTuningConfig.Instance.FractureIIChancePercent,
+				PrefixTuningConfig.Instance.FractureIIIChancePercent));
+
+		yield return new TooltipLine(
+			Mod,
+			$"{Name}FractureDamage",
+			Language.GetTextValue(
+				$"Mods.{Mod.Name}.Prefixes.{Name}.FractureDamageTooltip",
+				(int)(FractureIDamageMultiplier * 100f),
+				(int)(FractureIIDamageMultiplier * 100f),
+				(int)(FractureIIIDamageMultiplier * 100f)));
 	}
 }

@@ -23,17 +23,20 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 	public bool IsEchoDamageProjectile { get; set; }
 	public bool IsEchoVisualProjectile { get; set; }
 	public bool IsSpawnedEchoProjectile { get; set; }
+	public byte EchoFractureTier { get; set; }
 	public bool IsSanguineProjectile { get; set; }
+	public int VampiricManaRestoreAmount { get; set; }
 	public bool IsRadiantProjectile { get; set; }
 	public bool IsBreachingProjectile { get; set; }
+	public bool IsDesperateProjectile { get; set; }
 	public bool IsTemporalProjectile { get; set; }
+	public bool IsSkirmishingProjectile { get; set; }
+	public bool IsSkirmishFollowUpProjectile { get; set; }
+	public bool IsAttunedProjectile { get; set; }
+	public bool IsEmpoweredAttunedProjectile { get; set; }
 	public bool IsStormforgedProjectile { get; set; }
-	public bool IsSiphoningProjectile { get; set; }
-	public bool HasGrantedSiphoningMana { get; set; }
-	public int SiphoningManaRestoreAmount { get; set; }
 	public bool IsCatalyticProjectile { get; set; }
-	public bool IsHeadshotProjectile { get; set; }
-	public Vector2 HeadshotSpawnPosition { get; set; }
+	public bool IsDeadeyeProjectile { get; set; }
 	public bool IsSpinboundProjectile { get; set; }
 	public float BreachImpactScale { get; set; }
 	public float SpinboundReferenceSpeed { get; set; }
@@ -42,15 +45,28 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 	public float EchoDamageMultiplier { get; set; }
 	internal ShiftingSimulationId ShiftedSimulationId { get; set; }
 	internal float ShiftedStrengthMultiplier { get; set; }
-	internal Vector2 ShiftedHeadshotSpawnPosition { get; set; }
-	internal int ShiftedSiphoningManaRestoreAmount { get; set; }
-	internal bool HasGrantedShiftedSiphoningMana { get; set; }
+	internal int ShiftedVampiricManaRestoreAmount { get; set; }
 	internal bool IsShiftedSpinboundProjectile { get; set; }
 	internal float ShiftedSpinboundReferenceSpeed { get; set; }
 	internal int ShiftedGoldenSpinTier { get; set; }
 	internal bool HasConsumedShiftedSpinboundHitBonus { get; set; }
+	internal bool IsShiftedSkirmishFollowUpProjectile { get; set; }
+	internal bool IsEmpoweredShiftedAttunedProjectile { get; set; }
+	internal bool IsShiftedDeadeyeProjectile { get; set; }
+	internal bool HasPendingDesperateSurgeFeedback { get; set; }
 
 	private bool pendingCatalyticConsume;
+	private VampiricPreyState pendingVampiricPreyState;
+	private int pendingFractureIIFrames;
+	private int pendingFractureIIIFrames;
+	private bool hasPendingFractureII;
+	private bool hasPendingFractureIII;
+	private Vector2 fractureSpawnPosition;
+	private Vector2 fractureBaseVelocity;
+	private bool fractureUsesLocalNPCImmunity;
+	private int fractureLocalNPCHitCooldown;
+	private bool fractureUsesIDStaticNPCImmunity;
+	private int fractureIDStaticNPCHitCooldown;
 
 	[System.Flags]
 	private enum GoldenSpinMatchFlags : byte
@@ -92,6 +108,9 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 
 			if (item.prefix == ModContent.PrefixType<SanguinePrefix>()) {
 				IsSanguineProjectile = true;
+				if (WeaponPrefix.IsMagicWeapon(item)) {
+					VampiricManaRestoreAmount = WeaponPrefixGlobalItem.GetVampiricManaRestoreAmount(item);
+				}
 			}
 
 			if (item.prefix == ModContent.PrefixType<RadiantPrefix>()) {
@@ -103,26 +122,44 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 				BreachImpactScale = BreachingPrefix.GetBreachImpactMultiplier(item);
 			}
 
+			if (item.prefix == ModContent.PrefixType<DesperatePrefix>()) {
+				IsDesperateProjectile = true;
+			}
+
 			if (item.prefix == ModContent.PrefixType<TemporalPrefix>()) {
 				IsTemporalProjectile = true;
+			}
+
+			if (item.prefix == ModContent.PrefixType<SkirmishingPrefix>()) {
+				IsSkirmishingProjectile = true;
+				Player owner = Main.player[projectile.owner];
+				if (owner.active && !owner.dead) {
+					IsSkirmishFollowUpProjectile = owner.GetModPlayer<SkirmishingPlayer>().IsFollowUpProjectileWindowActive();
+				}
+			}
+
+			if (item.prefix == ModContent.PrefixType<AttunedPrefix>()) {
+				IsAttunedProjectile = true;
+				Player owner = Main.player[projectile.owner];
+				if (owner.active && !owner.dead) {
+					IsEmpoweredAttunedProjectile = owner.GetModPlayer<AttunedPlayer>().IsEmpoweredProjectileWindowActive();
+				}
 			}
 
 			if (item.prefix == ModContent.PrefixType<StormforgedPrefix>()) {
 				IsStormforgedProjectile = true;
 			}
 
-			if (item.prefix == ModContent.PrefixType<SiphoningPrefix>()) {
-				IsSiphoningProjectile = true;
-				SiphoningManaRestoreAmount = WeaponPrefixGlobalItem.GetSiphoningManaRestoreAmount(item);
-			}
-
 			if (item.prefix == ModContent.PrefixType<CatalyticPrefix>()) {
 				IsCatalyticProjectile = true;
 			}
 
-			if (item.prefix == ModContent.PrefixType<HeadshotPrefix>()) {
-				IsHeadshotProjectile = true;
-				HeadshotSpawnPosition = projectile.Center;
+			if (item.prefix == ModContent.PrefixType<DeadeyePrefix>()) {
+				Player owner = Main.player[projectile.owner];
+				if (owner.active && !owner.dead && owner.GetModPlayer<DeadeyePlayer>().TryConsumeReadyShot()) {
+					IsDeadeyeProjectile = true;
+					projectile.velocity *= DeadeyePrefix.DeadeyeShotVelocityMultiplier;
+				}
 			}
 
 			if (item.prefix == ModContent.PrefixType<SpinboundPrefix>()) {
@@ -147,10 +184,19 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 				}
 
 				if (shiftedSimulationId == ShiftingSimulationId.Echoing) {
-					TrySpawnEchoProjectile(
+					TryScheduleFractureCascade(
 						projectile,
-						ShiftingSimulationCatalog.GetShiftedEchoChance(),
-						ShiftingSimulationCatalog.GetShiftedEchoDamageMultiplier());
+						ShiftingSimulationCatalog.GetShiftedFractureIChance(),
+						ShiftingSimulationCatalog.GetShiftedFractureIIChance(),
+						ShiftingSimulationCatalog.GetShiftedFractureIIIChance());
+				}
+
+				if (shiftedSimulationId == ShiftingSimulationId.Deadeye) {
+					Player owner = Main.player[projectile.owner];
+					if (owner.active && !owner.dead && owner.GetModPlayer<DeadeyePlayer>().TryConsumeReadyShot()) {
+						IsShiftedDeadeyeProjectile = true;
+						projectile.velocity *= ShiftingSimulationCatalog.GetShiftedDeadeyeVelocityMultiplier();
+					}
 				}
 			}
 		}
@@ -158,6 +204,7 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			WeaponPrefixGlobalProjectile parentGlobal = parentProjectile.GetGlobalProjectile<WeaponPrefixGlobalProjectile>();
 			if (parentGlobal.IsSanguineProjectile) {
 				IsSanguineProjectile = true;
+				VampiricManaRestoreAmount = parentGlobal.VampiricManaRestoreAmount;
 			}
 
 			if (parentGlobal.IsRadiantProjectile) {
@@ -168,10 +215,6 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 				IsStormforgedProjectile = true;
 			}
 
-			if (parentGlobal.IsHeadshotProjectile) {
-				IsHeadshotProjectile = true;
-				HeadshotSpawnPosition = projectile.Center;
-			}
 		}
 		else {
 			return;
@@ -181,7 +224,11 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			return;
 		}
 
-		TrySpawnEchoProjectile(projectile, PrefixTuningConfig.Instance.EchoChance, EchoingPrefix.EchoDamageMultiplier);
+		TryScheduleFractureCascade(
+			projectile,
+			PrefixTuningConfig.Instance.FractureIChance,
+			PrefixTuningConfig.Instance.FractureIIChance,
+			PrefixTuningConfig.Instance.FractureIIIChance);
 	}
 
 	public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
@@ -209,7 +256,13 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 		if (IsSanguineProjectile) {
 			Player owner = Main.player[projectile.owner];
 			if (owner.active && !owner.dead) {
-				WeaponPrefixGlobalItem.TryApplySanguineHeal(owner, damageDone);
+				WeaponPrefixGlobalItem.ApplyVampiricProjectileFeed(
+					owner,
+					target,
+					damageDone,
+					hit.Crit,
+					pendingVampiricPreyState,
+					VampiricManaRestoreAmount);
 			}
 		}
 
@@ -221,6 +274,27 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			Player owner = Main.player[projectile.owner];
 			if (owner.active && !owner.dead) {
 				WeaponPrefixGlobalItem.TryTriggerBreachingImpact(owner, target, projectile.velocity, damageDone, BreachImpactScale);
+			}
+		}
+
+		if (IsSkirmishingProjectile && damageDone > 0) {
+			Player owner = Main.player[projectile.owner];
+			if (owner.active && !owner.dead) {
+				owner.GetModPlayer<SkirmishingPlayer>().RegisterQualifyingHit();
+			}
+		}
+
+		if (IsAttunedProjectile && damageDone > 0) {
+			Player owner = Main.player[projectile.owner];
+			if (owner.active && !owner.dead) {
+				owner.GetModPlayer<AttunedPlayer>().RegisterQualifyingHit();
+			}
+		}
+
+		if (IsTemporalProjectile && damageDone > 0) {
+			Player owner = Main.player[projectile.owner];
+			if (owner.active && !owner.dead) {
+				WeaponPrefixGlobalItem.HandleTemporalHit(owner, target, damageDone, 1f);
 			}
 		}
 
@@ -245,28 +319,18 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			}
 		}
 
-		if (IsSiphoningProjectile
-			&& !HasGrantedSiphoningMana
-			&& damageDone > 0
-			&& target.active) {
-			Player owner = Main.player[projectile.owner];
-			if (owner.active && !owner.dead) {
-				int manaRestored = WeaponPrefixGlobalItem.TryApplySiphoningManaRestore(owner, SiphoningManaRestoreAmount);
-				if (manaRestored > 0) {
-					HasGrantedSiphoningMana = true;
-					projectile.netUpdate = true;
-				}
-			}
-		}
-
 		if (ShiftedSimulationId == ShiftingSimulationId.Sanguine) {
 			Player owner = Main.player[projectile.owner];
 			if (owner.active && !owner.dead) {
-				WeaponPrefixGlobalItem.TryApplySanguineHeal(
+				WeaponPrefixGlobalItem.ApplyVampiricProjectileFeed(
 					owner,
+					target,
 					damageDone,
-					ShiftingSimulationCatalog.GetShiftedSanguineLifeStealMultiplier(),
-					ShiftingSimulationCatalog.GetShiftedSanguineHealCapPerSecond());
+					hit.Crit,
+					pendingVampiricPreyState,
+					ShiftedVampiricManaRestoreAmount,
+					ShiftingPrefix.ShiftingStrengthMultiplier,
+					true);
 			}
 		}
 
@@ -289,40 +353,76 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			}
 		}
 
-		if (ShiftedSimulationId == ShiftingSimulationId.Siphoning
-			&& !HasGrantedShiftedSiphoningMana
-			&& damageDone > 0
-			&& target.active) {
+		if (ShiftedSimulationId == ShiftingSimulationId.Skirmishing && damageDone > 0) {
 			Player owner = Main.player[projectile.owner];
 			if (owner.active && !owner.dead) {
-				int manaRestored = WeaponPrefixGlobalItem.TryApplySiphoningManaRestore(
+				owner.GetModPlayer<SkirmishingPlayer>().RegisterQualifyingHit();
+			}
+		}
+
+		if (ShiftedSimulationId == ShiftingSimulationId.Attuned && damageDone > 0) {
+			Player owner = Main.player[projectile.owner];
+			if (owner.active && !owner.dead) {
+				owner.GetModPlayer<AttunedPlayer>().RegisterQualifyingHit();
+			}
+		}
+
+		if (ShiftedSimulationId == ShiftingSimulationId.Temporal && damageDone > 0) {
+			Player owner = Main.player[projectile.owner];
+			if (owner.active && !owner.dead) {
+				WeaponPrefixGlobalItem.HandleTemporalHit(
 					owner,
-					ShiftedSiphoningManaRestoreAmount,
-					ShiftingSimulationCatalog.GetShiftedSiphoningMaxRestorePerSecond());
-				if (manaRestored > 0) {
-					HasGrantedShiftedSiphoningMana = true;
-					projectile.netUpdate = true;
-				}
+					target,
+					damageDone,
+					ShiftingPrefix.ShiftingStrengthMultiplier,
+					true);
+			}
+		}
+
+		if (HasPendingDesperateSurgeFeedback && damageDone > 0 && target.active) {
+			float visualMultiplier = ShiftedSimulationId == ShiftingSimulationId.Desperate
+				? ShiftingPrefix.ShiftingStrengthMultiplier * 1.12f
+				: 1f;
+			WeaponPrefixGlobalItem.SpawnDesperateSurgeImpactEffect(target.Center, projectile.velocity, visualMultiplier);
+			HasPendingDesperateSurgeFeedback = false;
+		}
+
+		pendingVampiricPreyState = VampiricPreyState.None;
+
+		if (damageDone > 0 && target.active && projectile.owner == Main.myPlayer) {
+			if (IsEmpoweredAttunedProjectile) {
+				SpawnAttunedImpactEffect(target.Center, projectile.velocity, false, 1f);
+			}
+
+			if (ShiftedSimulationId == ShiftingSimulationId.Attuned && IsEmpoweredShiftedAttunedProjectile) {
+				SpawnAttunedImpactEffect(target.Center, projectile.velocity, true, ShiftingPrefix.ShiftingStrengthMultiplier);
 			}
 		}
 
 		if (damageDone > 0 && target.active) {
-			if (IsHeadshotProjectile) {
-				EmitHeadshotFeedback(projectile, target, Vector2.Distance(HeadshotSpawnPosition, projectile.Center));
+			if (IsDeadeyeProjectile) {
+				HandleDeadeyeHit(projectile, target, hit, damageDone, 1f);
 			}
 
-			if (ShiftedSimulationId == ShiftingSimulationId.Headshot) {
-				EmitHeadshotFeedback(
-					projectile,
-					target,
-					Vector2.Distance(ShiftedHeadshotSpawnPosition, projectile.Center),
-					true);
+			if (IsShiftedDeadeyeProjectile) {
+				HandleDeadeyeHit(projectile, target, hit, damageDone, ShiftingPrefix.ShiftingStrengthMultiplier, true);
 			}
 		}
 	}
 
 	public override void AI(Projectile projectile)
 	{
+		if (!IsSpawnedEchoProjectile) {
+			ProcessPendingFractures(projectile);
+		}
+
+		if (IsSanguineProjectile || ShiftedSimulationId == ShiftingSimulationId.Sanguine) {
+			UpdateVampiricProjectileVisual(
+				projectile,
+				VampiricManaRestoreAmount > 0 || ShiftedVampiricManaRestoreAmount > 0,
+				ShiftedSimulationId == ShiftingSimulationId.None ? 1f : ShiftingPrefix.ShiftingStrengthMultiplier);
+		}
+
 		if (IsRadiantProjectile) {
 			UpdateRadiantProjectileVisual(projectile, 1f);
 		}
@@ -331,12 +431,45 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			UpdateTemporalProjectileVisual(projectile, 1f);
 		}
 
+		if (IsSkirmishFollowUpProjectile) {
+			UpdateSkirmishingProjectileVisual(projectile, 1f);
+		}
+
+		if (IsAttunedProjectile) {
+			UpdateAttunedProjectileVisual(projectile, IsEmpoweredAttunedProjectile, 1f);
+		}
+
+		if (IsDeadeyeProjectile) {
+			UpdateDeadeyeProjectileVisual(projectile, 1f);
+		}
+
 		if (ShiftedSimulationId == ShiftingSimulationId.Radiant) {
 			UpdateRadiantProjectileVisual(projectile, ShiftingSimulationCatalog.GetShiftedRadiantLightMultiplier());
 		}
 
 		if (ShiftedSimulationId == ShiftingSimulationId.Temporal) {
 			UpdateTemporalProjectileVisual(projectile, ShiftingPrefix.ShiftingStrengthMultiplier);
+		}
+
+		if (ShiftedSimulationId == ShiftingSimulationId.Skirmishing && IsShiftedSkirmishFollowUpProjectile) {
+			UpdateSkirmishingProjectileVisual(projectile, ShiftingPrefix.ShiftingStrengthMultiplier);
+		}
+
+		if (ShiftedSimulationId == ShiftingSimulationId.Attuned) {
+			UpdateAttunedProjectileVisual(
+				projectile,
+				IsEmpoweredShiftedAttunedProjectile,
+				ShiftingPrefix.ShiftingStrengthMultiplier);
+		}
+
+		if (IsShiftedDeadeyeProjectile) {
+			UpdateDeadeyeProjectileVisual(projectile, ShiftingPrefix.ShiftingStrengthMultiplier);
+		}
+
+		if (IsDesperateProjectile || ShiftedSimulationId == ShiftingSimulationId.Desperate) {
+			UpdateDesperateProjectileVisual(
+				projectile,
+				IsDesperateProjectile ? 1f : ShiftingPrefix.ShiftingStrengthMultiplier);
 		}
 
 		if (IsSpinboundProjectile) {
@@ -356,13 +489,18 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 		}
 
 		Lighting.AddLight(projectile.Center, 0.035f, 0.05f, 0.09f);
+		Color fractureTint = WeaponPrefixVisuals.GetFracturedTint(EchoFractureTier);
+		int fractureTier = System.Math.Max(1, (int)EchoFractureTier);
+		float tierScale = 0.7f + 0.15f * fractureTier;
+		Lighting.AddLight(projectile.Center, fractureTint.ToVector3() * (0.06f * tierScale));
 
 		if (projectile.numUpdates == 0 && projectile.timeLeft % 6 == 0) {
 			Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, WeaponPrefixVisuals.EchoDustType);
 			dust.noGravity = true;
 			dust.velocity = projectile.velocity * 0.08f;
-			dust.scale = 0.7f;
-			dust.fadeIn = 0.85f;
+			dust.color = fractureTint;
+			dust.scale = 0.66f + 0.08f * fractureTier;
+			dust.fadeIn = 0.88f + 0.02f * EchoFractureTier;
 		}
 
 		if (projectile.numUpdates == 0 && projectile.timeLeft % 7 == 0) {
@@ -370,8 +508,9 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			Dust auraDust = Dust.NewDustPerfect(projectile.Center + orbitOffset, WeaponPrefixVisuals.EchoDustType);
 			auraDust.noGravity = true;
 			auraDust.velocity = projectile.velocity * 0.02f;
-			auraDust.scale = 0.75f;
-			auraDust.fadeIn = 0.9f;
+			auraDust.color = fractureTint;
+			auraDust.scale = 0.7f + 0.08f * fractureTier;
+			auraDust.fadeIn = 0.92f + 0.02f * EchoFractureTier;
 		}
 	}
 
@@ -381,7 +520,7 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			return null;
 		}
 
-		return WeaponPrefixVisuals.EchoTint;
+		return WeaponPrefixVisuals.GetFracturedTint(EchoFractureTier);
 	}
 
 	public override bool PreDraw(Projectile projectile, ref Color lightColor)
@@ -392,8 +531,9 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			Vector2 origin = frame.Size() * 0.5f;
 			Vector2 basePosition = GetProjectileDrawPosition(projectile);
 			float pulse = 1f + 0.015f * System.MathF.Sin(Main.GlobalTimeWrappedHourly * 10f);
-			Color preDrawTint = Color.Lerp(lightColor, WeaponPrefixVisuals.EchoTint, 0.2f);
-			Color underlayTint = WeaponPrefixVisuals.EchoAfterimageTint * 0.4f;
+			Color fractureTint = WeaponPrefixVisuals.GetFracturedTint(EchoFractureTier);
+			Color preDrawTint = Color.Lerp(lightColor, fractureTint, 0.24f);
+			Color underlayTint = WeaponPrefixVisuals.GetFracturedAfterimageTint(EchoFractureTier) * (0.34f + 0.04f * System.Math.Max(1, (int)EchoFractureTier));
 
 			DrawEchoSprite(projectile, texture, frame, origin, basePosition, underlayTint, projectile.rotation, projectile.scale * (pulse + 0.01f));
 			DrawEchoSprite(projectile, texture, frame, origin, basePosition - projectile.velocity * 0.1f, underlayTint * 0.6f, projectile.rotation, projectile.scale * pulse);
@@ -424,17 +564,89 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			lightColor = Color.Lerp(lightColor, WeaponPrefixVisuals.TemporalTint, 0.18f * System.MathF.Min(strength, 1.25f));
 		}
 
+		if (IsSkirmishFollowUpProjectile || (ShiftedSimulationId == ShiftingSimulationId.Skirmishing && IsShiftedSkirmishFollowUpProjectile)) {
+			Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
+			Rectangle frame = texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
+			Vector2 origin = frame.Size() * 0.5f;
+			Vector2 basePosition = GetProjectileDrawPosition(projectile);
+			float strength = ShiftedSimulationId == ShiftingSimulationId.Skirmishing && IsShiftedSkirmishFollowUpProjectile
+				? ShiftingPrefix.ShiftingStrengthMultiplier
+				: 1f;
+			Color underlayTint = WeaponPrefixVisuals.SkirmishingTracerTint * (0.28f + 0.04f * System.MathF.Min(strength, 1.5f));
+
+			DrawEchoSprite(
+				projectile,
+				texture,
+				frame,
+				origin,
+				basePosition - projectile.velocity * (0.11f + 0.02f * strength),
+				underlayTint,
+				projectile.rotation,
+				projectile.scale * (1f + 0.01f * strength));
+
+			lightColor = Color.Lerp(lightColor, WeaponPrefixVisuals.GetSkirmishingColor(1f, true), 0.16f * System.MathF.Min(strength, 1.2f));
+		}
+
+		if (IsDeadeyeProjectile || IsShiftedDeadeyeProjectile) {
+			Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
+			Rectangle frame = texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
+			Vector2 origin = frame.Size() * 0.5f;
+			Vector2 basePosition = GetProjectileDrawPosition(projectile);
+			float strength = IsShiftedDeadeyeProjectile ? ShiftingPrefix.ShiftingStrengthMultiplier : 1f;
+			Color underlayTint = WeaponPrefixVisuals.DeadeyeAfterimageTint * (0.32f + 0.05f * System.MathF.Min(strength, 1.5f));
+
+			DrawEchoSprite(
+				projectile,
+				texture,
+				frame,
+				origin,
+				basePosition - projectile.velocity * (0.12f + 0.02f * strength),
+				underlayTint,
+				projectile.rotation,
+				projectile.scale * (1f + 0.012f * strength));
+
+			lightColor = Color.Lerp(lightColor, WeaponPrefixVisuals.DeadeyeShotColor, 0.18f * System.MathF.Min(strength, 1.25f));
+		}
+
 		return true;
 	}
 
 	public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)
 	{
 		if (IsEchoDamageProjectile) {
-			modifiers.SourceDamage *= EchoDamageMultiplier > 0f ? EchoDamageMultiplier : EchoingPrefix.EchoDamageMultiplier;
+			modifiers.SourceDamage *= EchoDamageMultiplier > 0f ? EchoDamageMultiplier : EchoingPrefix.FractureIDamageMultiplier;
+		}
+
+		if (IsSanguineProjectile) {
+			pendingVampiricPreyState = SanguinePrefix.GetPreyState(target);
+			TryApplyVampiricFrenzyCrit(projectile, pendingVampiricPreyState, ref modifiers, 1f);
+		}
+		else if (ShiftedSimulationId == ShiftingSimulationId.Sanguine) {
+			pendingVampiricPreyState = SanguinePrefix.GetPreyState(target);
+			TryApplyVampiricFrenzyCrit(projectile, pendingVampiricPreyState, ref modifiers, ShiftingPrefix.ShiftingStrengthMultiplier);
+		}
+		else {
+			pendingVampiricPreyState = VampiricPreyState.None;
 		}
 
 		if (ShiftedSimulationId == ShiftingSimulationId.Breaching) {
 			modifiers.ArmorPenetration += ShiftingSimulationCatalog.GetShiftedArmorPenetrationBonus(ShiftedSimulationId);
+		}
+
+		if (IsDesperateProjectile) {
+			TryApplyDesperateSurge(projectile, ref modifiers, 1f);
+		}
+
+		if (IsSkirmishFollowUpProjectile) {
+			modifiers.CritDamage += SkirmishingPrefix.FollowUpCritDamageBonus;
+		}
+
+		if (ShiftedSimulationId == ShiftingSimulationId.Desperate) {
+			TryApplyDesperateSurge(projectile, ref modifiers, ShiftingPrefix.ShiftingStrengthMultiplier, true);
+		}
+
+		if (ShiftedSimulationId == ShiftingSimulationId.Skirmishing && IsShiftedSkirmishFollowUpProjectile) {
+			modifiers.CritDamage += ShiftingSimulationCatalog.GetShiftedSkirmishingFollowUpCritDamageBonus();
 		}
 
 		bool shiftedCatalytic = ShiftedSimulationId == ShiftingSimulationId.Catalytic;
@@ -455,19 +667,12 @@ public sealed class WeaponPrefixGlobalProjectile : GlobalProjectile
 			}
 		}
 
-		if (!IsHeadshotProjectile) {
+		if (!IsDeadeyeProjectile) {
 			goto Spinbound;
 		}
 
-		float travelledDistance = Vector2.Distance(HeadshotSpawnPosition, projectile.Center);
-		float distanceDamageBonus = GetHeadshotDistanceDamageBonus(travelledDistance);
-		if (distanceDamageBonus > 0f) {
-			modifiers.SourceDamage *= 1f + distanceDamageBonus;
-		}
-
-		modifiers.CritDamage += travelledDistance >= HeadshotPrefix.LongRangeCritThresholdPixels
-			? HeadshotPrefix.LongRangeCritDamageBonus
-			: HeadshotPrefix.CritDamageBonus;
+		TryApplyDeadeyeCrit(projectile, ref modifiers, 1f);
+		modifiers.CritDamage += DeadeyePrefix.DeadeyeShotCritDamageBonus;
 
 Spinbound:
 		if (!IsSpinboundProjectile || HasConsumedSpinboundHitBonus) {
@@ -490,27 +695,18 @@ Shifting:
 			projectile.netUpdate = true;
 		}
 
-		if (ShiftedSimulationId != ShiftingSimulationId.Headshot) {
+		if (!IsShiftedDeadeyeProjectile) {
 			return;
 		}
 
-		float shiftedTravelledDistance = Vector2.Distance(ShiftedHeadshotSpawnPosition, projectile.Center);
-		float shiftedDistanceDamageBonus = GetHeadshotDistanceDamageBonus(
-			shiftedTravelledDistance,
-			ShiftingSimulationCatalog.GetShiftedHeadshotMaxDistanceDamageBonus());
-		if (shiftedDistanceDamageBonus > 0f) {
-			modifiers.SourceDamage *= 1f + shiftedDistanceDamageBonus;
-		}
-
-		modifiers.CritDamage += shiftedTravelledDistance >= HeadshotPrefix.LongRangeCritThresholdPixels
-			? ShiftingSimulationCatalog.GetShiftedHeadshotLongRangeCritDamageBonus()
-			: ShiftingSimulationCatalog.GetShiftedHeadshotCritDamageBonus();
+		TryApplyDeadeyeCrit(projectile, ref modifiers, ShiftingPrefix.ShiftingStrengthMultiplier, true);
+		modifiers.CritDamage += ShiftingSimulationCatalog.GetShiftedDeadeyeCritDamageBonus();
 	}
 
 	public override void ModifyHitPlayer(Projectile projectile, Player target, ref Player.HurtModifiers modifiers)
 	{
 		if (IsEchoDamageProjectile) {
-			modifiers.SourceDamage *= EchoDamageMultiplier > 0f ? EchoDamageMultiplier : EchoingPrefix.EchoDamageMultiplier;
+			modifiers.SourceDamage *= EchoDamageMultiplier > 0f ? EchoDamageMultiplier : EchoingPrefix.FractureIDamageMultiplier;
 		}
 	}
 
@@ -522,29 +718,31 @@ Shifting:
 		bitWriter.WriteBit(IsSanguineProjectile);
 		bitWriter.WriteBit(IsRadiantProjectile);
 		bitWriter.WriteBit(IsBreachingProjectile);
+		bitWriter.WriteBit(IsDesperateProjectile);
 		bitWriter.WriteBit(IsTemporalProjectile);
+		bitWriter.WriteBit(IsSkirmishingProjectile);
+		bitWriter.WriteBit(IsSkirmishFollowUpProjectile);
+		bitWriter.WriteBit(IsAttunedProjectile);
+		bitWriter.WriteBit(IsEmpoweredAttunedProjectile);
 		bitWriter.WriteBit(IsStormforgedProjectile);
-		bitWriter.WriteBit(IsSiphoningProjectile);
-		bitWriter.WriteBit(HasGrantedSiphoningMana);
 		bitWriter.WriteBit(IsCatalyticProjectile);
-		bitWriter.WriteBit(IsHeadshotProjectile);
+		bitWriter.WriteBit(IsDeadeyeProjectile);
 		bitWriter.WriteBit(IsSpinboundProjectile);
 		bitWriter.WriteBit(HasConsumedSpinboundHitBonus);
-		bitWriter.WriteBit(HasGrantedShiftedSiphoningMana);
 		bitWriter.WriteBit(IsShiftedSpinboundProjectile);
 		bitWriter.WriteBit(HasConsumedShiftedSpinboundHitBonus);
+		bitWriter.WriteBit(IsShiftedSkirmishFollowUpProjectile);
+		bitWriter.WriteBit(IsEmpoweredShiftedAttunedProjectile);
+		bitWriter.WriteBit(IsShiftedDeadeyeProjectile);
+		binaryWriter.Write(EchoFractureTier);
 		binaryWriter.Write(EchoDamageMultiplier);
-		binaryWriter.Write(SiphoningManaRestoreAmount);
-		binaryWriter.Write(HeadshotSpawnPosition.X);
-		binaryWriter.Write(HeadshotSpawnPosition.Y);
+		binaryWriter.Write(VampiricManaRestoreAmount);
 		binaryWriter.Write(BreachImpactScale);
 		binaryWriter.Write(SpinboundReferenceSpeed);
 		binaryWriter.Write(GoldenSpinTier);
 		binaryWriter.Write((byte)ShiftedSimulationId);
 		binaryWriter.Write(ShiftedStrengthMultiplier);
-		binaryWriter.Write(ShiftedHeadshotSpawnPosition.X);
-		binaryWriter.Write(ShiftedHeadshotSpawnPosition.Y);
-		binaryWriter.Write(ShiftedSiphoningManaRestoreAmount);
+		binaryWriter.Write(ShiftedVampiricManaRestoreAmount);
 		binaryWriter.Write(ShiftedSpinboundReferenceSpeed);
 		binaryWriter.Write(ShiftedGoldenSpinTier);
 	}
@@ -557,27 +755,31 @@ Shifting:
 		IsSanguineProjectile = bitReader.ReadBit();
 		IsRadiantProjectile = bitReader.ReadBit();
 		IsBreachingProjectile = bitReader.ReadBit();
+		IsDesperateProjectile = bitReader.ReadBit();
 		IsTemporalProjectile = bitReader.ReadBit();
+		IsSkirmishingProjectile = bitReader.ReadBit();
+		IsSkirmishFollowUpProjectile = bitReader.ReadBit();
+		IsAttunedProjectile = bitReader.ReadBit();
+		IsEmpoweredAttunedProjectile = bitReader.ReadBit();
 		IsStormforgedProjectile = bitReader.ReadBit();
-		IsSiphoningProjectile = bitReader.ReadBit();
-		HasGrantedSiphoningMana = bitReader.ReadBit();
 		IsCatalyticProjectile = bitReader.ReadBit();
-		IsHeadshotProjectile = bitReader.ReadBit();
+		IsDeadeyeProjectile = bitReader.ReadBit();
 		IsSpinboundProjectile = bitReader.ReadBit();
 		HasConsumedSpinboundHitBonus = bitReader.ReadBit();
-		HasGrantedShiftedSiphoningMana = bitReader.ReadBit();
 		IsShiftedSpinboundProjectile = bitReader.ReadBit();
 		HasConsumedShiftedSpinboundHitBonus = bitReader.ReadBit();
+		IsShiftedSkirmishFollowUpProjectile = bitReader.ReadBit();
+		IsEmpoweredShiftedAttunedProjectile = bitReader.ReadBit();
+		IsShiftedDeadeyeProjectile = bitReader.ReadBit();
+		EchoFractureTier = binaryReader.ReadByte();
 		EchoDamageMultiplier = binaryReader.ReadSingle();
-		SiphoningManaRestoreAmount = binaryReader.ReadInt32();
-		HeadshotSpawnPosition = new Vector2(binaryReader.ReadSingle(), binaryReader.ReadSingle());
+		VampiricManaRestoreAmount = binaryReader.ReadInt32();
 		BreachImpactScale = binaryReader.ReadSingle();
 		SpinboundReferenceSpeed = binaryReader.ReadSingle();
 		GoldenSpinTier = binaryReader.ReadInt32();
 		ShiftedSimulationId = (ShiftingSimulationId)binaryReader.ReadByte();
 		ShiftedStrengthMultiplier = binaryReader.ReadSingle();
-		ShiftedHeadshotSpawnPosition = new Vector2(binaryReader.ReadSingle(), binaryReader.ReadSingle());
-		ShiftedSiphoningManaRestoreAmount = binaryReader.ReadInt32();
+		ShiftedVampiricManaRestoreAmount = binaryReader.ReadInt32();
 		ShiftedSpinboundReferenceSpeed = binaryReader.ReadSingle();
 		ShiftedGoldenSpinTier = binaryReader.ReadInt32();
 	}
@@ -612,26 +814,32 @@ Shifting:
 		Main.EntitySpriteDraw(texture, drawPosition, frame, color, rotation, origin, scale, spriteEffects);
 	}
 
-	private static float GetHeadshotDistanceDamageBonus(float travelledDistance)
+	private static void TryApplyVampiricFrenzyCrit(Projectile projectile, VampiricPreyState preyState, ref NPC.HitModifiers modifiers, float strengthMultiplier)
 	{
-		return GetHeadshotDistanceDamageBonus(travelledDistance, HeadshotPrefix.MaxDistanceDamageBonus);
-	}
-
-	private static float GetHeadshotDistanceDamageBonus(float travelledDistance, float maxDistanceDamageBonus)
-	{
-		if (travelledDistance <= 0f) {
-			return 0f;
+		if (projectile.owner < 0 || projectile.owner >= Main.maxPlayers || preyState == VampiricPreyState.None) {
+			return;
 		}
 
-		float distanceRatio = System.MathF.Min(1f, travelledDistance / HeadshotPrefix.FullDistanceBonusPixels);
-		return distanceRatio * maxDistanceDamageBonus;
+		Player owner = Main.player[projectile.owner];
+		if (!owner.active || owner.dead || !owner.GetModPlayer<VampiricPlayer>().IsFrenzied) {
+			return;
+		}
+
+		VampiricPlayer vampiricPlayer = owner.GetModPlayer<VampiricPlayer>();
+		int critBonus = (int)System.MathF.Round(SanguinePrefix.GetFrenzyCritBonus(preyState) * vampiricPlayer.GetFrenzyTierScale());
+		if (critBonus <= 0) {
+			return;
+		}
+
+		float critChance = System.MathF.Min(0.95f, (critBonus * System.MathF.Max(1f, strengthMultiplier)) / 100f);
+		if (Main.rand.NextFloat() < critChance) {
+			modifiers.SetCrit();
+		}
 	}
 
-	private static void EmitHeadshotFeedback(Projectile projectile, NPC target, float travelledDistance, bool shifted = false)
+	private static void TryApplyDeadeyeCrit(Projectile projectile, ref NPC.HitModifiers modifiers, float strengthMultiplier, bool shifted = false)
 	{
-		if (projectile.owner != Main.myPlayer
-			|| projectile.owner < 0
-			|| projectile.owner >= Main.maxPlayers) {
+		if (projectile.owner < 0 || projectile.owner >= Main.maxPlayers) {
 			return;
 		}
 
@@ -640,67 +848,171 @@ Shifting:
 			return;
 		}
 
-		HeadshotFeedbackPlayer feedbackPlayer = owner.GetModPlayer<HeadshotFeedbackPlayer>();
-		bool longRange = travelledDistance >= HeadshotPrefix.LongRangeCritThresholdPixels;
-		float visualMultiplier = shifted ? 1.12f : 1f;
-
-		if (longRange) {
-			if (feedbackPlayer.CanEmitLongRangeVisual()) {
-				SpawnHeadshotImpactEffect(target.Center, projectile.velocity, true, visualMultiplier);
-			}
-
-			if (feedbackPlayer.CanPlayLongRangeSound()) {
-				SoundEngine.PlaySound(SoundID.Item153, target.Center);
-			}
-
+		int critBonus = shifted
+			? ShiftingSimulationCatalog.GetShiftedDeadeyeCritChanceBonus()
+			: DeadeyePrefix.DeadeyeShotCritChanceBonus;
+		if (critBonus <= 0) {
 			return;
 		}
 
-		if (feedbackPlayer.CanEmitNormalVisual()) {
-			SpawnHeadshotImpactEffect(target.Center, projectile.velocity, false, visualMultiplier);
+		float critChance = System.MathF.Min(0.95f, (critBonus * System.MathF.Max(1f, strengthMultiplier)) / 100f);
+		if (Main.rand.NextFloat() < critChance) {
+			modifiers.SetCrit();
 		}
 	}
 
-	private static void SpawnHeadshotImpactEffect(Vector2 position, Vector2 projectileVelocity, bool longRange, float visualMultiplier)
+	private void TryApplyDesperateSurge(Projectile projectile, ref NPC.HitModifiers modifiers, float visualMultiplier, bool shifted = false)
 	{
-		Vector2 direction = projectileVelocity.SafeNormalize(Vector2.UnitX);
-		Vector2 tangent = direction.RotatedBy(MathHelper.PiOver2);
-		Color lightColor = longRange ? WeaponPrefixVisuals.HeadshotLongRangeTint : WeaponPrefixVisuals.HeadshotTint;
-		float lightStrength = longRange ? 0.32f : 0.18f;
-		Lighting.AddLight(position, lightColor.ToVector3() * (lightStrength * visualMultiplier));
-
-		int burstCount = longRange ? 8 : 4;
-		for (int i = 0; i < burstCount; i++) {
-			float side = i % 2 == 0 ? -1f : 1f;
-			float lane = 1f + i / 2f;
-			Vector2 velocity = direction * (longRange ? 1.35f : 0.8f) + tangent * (0.3f * lane * side);
-			Dust dust = Dust.NewDustPerfect(
-				position + tangent * (3f * lane * side),
-				longRange && i % 3 == 0 ? WeaponPrefixVisuals.HeadshotLongRangeDustType : WeaponPrefixVisuals.HeadshotDustType,
-				velocity,
-				0,
-				lightColor,
-				(longRange ? 1f : 0.8f) * visualMultiplier);
-			dust.noGravity = true;
-			dust.fadeIn = longRange ? 0.95f : 0.85f;
-		}
-
-		if (!longRange) {
+		if (projectile.owner < 0 || projectile.owner >= Main.maxPlayers) {
 			return;
 		}
 
-		for (int i = 0; i < 6; i++) {
-			float angle = MathHelper.TwoPi * i / 6f;
-			Vector2 offset = angle.ToRotationVector2() * 8f;
-			Dust dust = Dust.NewDustPerfect(
-				position + offset,
-				i % 2 == 0 ? WeaponPrefixVisuals.HeadshotLongRangeDustType : WeaponPrefixVisuals.HeadshotDustType,
-				offset.SafeNormalize(Vector2.UnitX) * 0.9f,
+		Player owner = Main.player[projectile.owner];
+		if (!owner.active || owner.dead) {
+			return;
+		}
+
+		DesperatePlayer desperatePlayer = owner.GetModPlayer<DesperatePlayer>();
+		if (!desperatePlayer.TryConsumeSurge()) {
+			return;
+		}
+
+		float surgeDamageBonus = shifted
+			? ShiftingSimulationCatalog.GetShiftedDesperateSurgeDamageBonus()
+			: DesperatePrefix.SurgeDamageBonus;
+		modifiers.SourceDamage *= 1f + surgeDamageBonus;
+		HasPendingDesperateSurgeFeedback = true;
+	}
+
+	private static void HandleDeadeyeHit(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone, float strengthMultiplier, bool shifted = false)
+	{
+		SpawnDeadeyeImpactEffect(target.Center, projectile.velocity, strengthMultiplier, hit.Crit);
+		if (!hit.Crit) {
+			return;
+		}
+
+		TryTriggerDeadeyeBurst(projectile, target, damageDone, strengthMultiplier, shifted);
+	}
+
+	private static void UpdateDeadeyeProjectileVisual(Projectile projectile, float strengthMultiplier)
+	{
+		float pulse = 0.8f + 0.2f * (0.5f + 0.5f * System.MathF.Sin(Main.GlobalTimeWrappedHourly * 10.5f + projectile.identity * 0.23f));
+		Lighting.AddLight(projectile.Center, WeaponPrefixVisuals.DeadeyeShotColor.ToVector3() * (0.14f * pulse * strengthMultiplier));
+
+		if (projectile.owner != Main.myPlayer || projectile.numUpdates != 0) {
+			return;
+		}
+
+		if (projectile.timeLeft % 5 == 0) {
+			Dust shotDust = Dust.NewDustPerfect(
+				projectile.Center + Main.rand.NextVector2Circular(4f, 4f),
+				WeaponPrefixVisuals.DeadeyeShotDustType,
+				projectile.velocity * -0.06f + Main.rand.NextVector2Circular(0.1f, 0.1f),
 				0,
-				WeaponPrefixVisuals.HeadshotLongRangeTint,
-				0.95f * visualMultiplier);
+				WeaponPrefixVisuals.DeadeyeShotColor,
+				0.8f * strengthMultiplier);
+			shotDust.noGravity = true;
+			shotDust.fadeIn = 0.92f;
+		}
+
+		if (projectile.timeLeft % 9 == 0) {
+			Dust leafDust = Dust.NewDustPerfect(
+				projectile.Center + Main.rand.NextVector2Circular(3f, 3f),
+				WeaponPrefixVisuals.DeadeyeLeafDustType,
+				projectile.velocity * -0.03f + Main.rand.NextVector2Circular(0.08f, 0.08f),
+				0,
+				WeaponPrefixVisuals.DeadeyeLeafAccentColor,
+				0.72f * strengthMultiplier);
+			leafDust.noGravity = true;
+			leafDust.fadeIn = 0.9f;
+		}
+	}
+
+	private static void SpawnDeadeyeImpactEffect(Vector2 position, Vector2 projectileVelocity, float strengthMultiplier, bool critical)
+	{
+		Vector2 direction = projectileVelocity.SafeNormalize(Vector2.UnitX);
+		Vector2 tangent = direction.RotatedBy(MathHelper.PiOver2);
+		Color impactColor = critical ? WeaponPrefixVisuals.DeadeyeLeafAccentColor : WeaponPrefixVisuals.DeadeyeShotColor;
+		Lighting.AddLight(position, impactColor.ToVector3() * ((critical ? 0.22f : 0.14f) * strengthMultiplier));
+
+		int dustCount = critical ? 7 : 4;
+		for (int i = 0; i < dustCount; i++) {
+			float side = i % 2 == 0 ? -1f : 1f;
+			float lane = 1f + i / 2f;
+			Vector2 velocity = direction * (critical ? 1.2f : 0.8f) + tangent * (0.24f * lane * side);
+			Dust dust = Dust.NewDustPerfect(
+				position + tangent * (2.5f * lane * side),
+				critical && i % 2 == 0 ? WeaponPrefixVisuals.DeadeyeLeafDustType : WeaponPrefixVisuals.DeadeyeShotDustType,
+				velocity,
+				0,
+				critical && i % 2 == 0 ? WeaponPrefixVisuals.DeadeyeLeafAccentColor : impactColor,
+				(critical ? 0.95f : 0.78f) * strengthMultiplier);
 			dust.noGravity = true;
-			dust.fadeIn = 0.95f;
+			dust.fadeIn = critical ? 0.95f : 0.88f;
+		}
+	}
+
+	private static void TryTriggerDeadeyeBurst(Projectile projectile, NPC primaryTarget, int damageDone, float strengthMultiplier, bool shifted)
+	{
+		if (projectile.owner < 0 || projectile.owner >= Main.maxPlayers || damageDone <= 0 || primaryTarget == null || !primaryTarget.active) {
+			return;
+		}
+
+		Player owner = Main.player[projectile.owner];
+		if (!owner.active || owner.dead) {
+			return;
+		}
+
+		int baseBurstDamage = (int)System.MathF.Max(
+			1f,
+			System.MathF.Round(damageDone * (shifted
+				? ShiftingSimulationCatalog.GetShiftedDeadeyeBurstDamageRatio()
+				: DeadeyePrefix.CriticalBurstDamageRatio)));
+
+		SpawnDeadeyeBurstEffect(primaryTarget.Center, strengthMultiplier);
+		if (owner.whoAmI == Main.myPlayer && owner.GetModPlayer<DeadeyePlayer>().CanPlayCritBurstSound()) {
+			SoundEngine.PlaySound(SoundID.Item27 with { Pitch = 0.12f, Volume = 0.55f }, primaryTarget.Center);
+		}
+
+		if (owner.whoAmI != Main.myPlayer) {
+			return;
+		}
+
+		float maxDistanceSquared = DeadeyePrefix.CriticalBurstRadiusPixels * DeadeyePrefix.CriticalBurstRadiusPixels;
+		foreach (NPC candidate in Main.npc) {
+			if (!candidate.active
+				|| candidate.whoAmI == primaryTarget.whoAmI
+				|| candidate.friendly
+				|| candidate.dontTakeDamage
+				|| candidate.type == NPCID.TargetDummy
+				|| (!candidate.CanBeChasedBy() && !candidate.immortal)
+				|| Vector2.DistanceSquared(primaryTarget.Center, candidate.Center) > maxDistanceSquared) {
+				continue;
+			}
+
+			int burstDamage = candidate.boss
+				? (int)System.MathF.Max(1f, System.MathF.Round(baseBurstDamage * DeadeyePrefix.BossBurstDamageMultiplier))
+				: baseBurstDamage;
+			owner.ApplyDamageToNPC(candidate, burstDamage, 0f, candidate.Center.X >= owner.Center.X ? 1 : -1, false);
+		}
+	}
+
+	private static void SpawnDeadeyeBurstEffect(Vector2 position, float strengthMultiplier)
+	{
+		Lighting.AddLight(position, WeaponPrefixVisuals.DeadeyeLeafBurstColor.ToVector3() * (0.24f * strengthMultiplier));
+		for (int i = 0; i < 10; i++) {
+			float angle = MathHelper.TwoPi * i / 10f;
+			Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(0.8f, 1.8f) * strengthMultiplier;
+
+			Dust leafDust = Dust.NewDustPerfect(position, WeaponPrefixVisuals.DeadeyeLeafDustType, velocity, 0, WeaponPrefixVisuals.DeadeyeLeafBurstColor, 0.92f * strengthMultiplier);
+			leafDust.noGravity = true;
+			leafDust.fadeIn = 0.95f;
+
+			if (i % 2 == 0) {
+				Dust ghostDust = Dust.NewDustPerfect(position, WeaponPrefixVisuals.DeadeyeShotDustType, velocity * 0.6f, 0, WeaponPrefixVisuals.DeadeyeShotColor, 0.72f * strengthMultiplier);
+				ghostDust.noGravity = true;
+				ghostDust.fadeIn = 0.9f;
+			}
 		}
 	}
 
@@ -727,6 +1039,37 @@ Shifting:
 		float stabilizedSpeed = MathHelper.Lerp(currentSpeed, targetSpeed, SpinboundPrefix.StabilizationStrength);
 		Vector2 desiredVelocity = projectile.velocity.SafeNormalize(Vector2.UnitX * projectile.direction) * stabilizedSpeed;
 		projectile.velocity = Vector2.Lerp(projectile.velocity, desiredVelocity, SpinboundPrefix.StabilizationStrength);
+	}
+
+	private static void UpdateVampiricProjectileVisual(Projectile projectile, bool magicFeed, float intensityMultiplier)
+	{
+		float pulse = WeaponPrefixVisuals.GetVampiricPulse(projectile.identity * 0.14f) * intensityMultiplier;
+		Color feedColor = WeaponPrefixVisuals.GetVampiricFeedColor(VampiricPreyState.None, magicFeed);
+		Lighting.AddLight(projectile.Center, feedColor.ToVector3() * (0.1f * pulse));
+
+		if (projectile.owner != Main.myPlayer
+			|| projectile.numUpdates != 0
+			|| projectile.timeLeft % (magicFeed ? 6 : 8) != 0) {
+			return;
+		}
+
+		Vector2 lateralOffset = projectile.velocity.SafeNormalize(Vector2.UnitX * projectile.direction)
+			.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-4f, 4f);
+		Dust bloodDust = Dust.NewDustPerfect(projectile.Center + lateralOffset, WeaponPrefixVisuals.VampiricDustType);
+		bloodDust.noGravity = true;
+		bloodDust.velocity = projectile.velocity * -0.03f + Main.rand.NextVector2Circular(0.08f, 0.08f);
+		bloodDust.scale = 0.72f * intensityMultiplier;
+		bloodDust.fadeIn = 0.94f;
+
+		if (!magicFeed || projectile.timeLeft % 12 != 0) {
+			return;
+		}
+
+		Dust manaDust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(3f, 3f), WeaponPrefixVisuals.VampiricMagicDustType);
+		manaDust.noGravity = true;
+		manaDust.velocity = projectile.velocity * -0.025f + Main.rand.NextVector2Circular(0.06f, 0.06f);
+		manaDust.scale = 0.7f * intensityMultiplier;
+		manaDust.fadeIn = 0.9f;
 	}
 
 	private static void UpdateRadiantProjectileVisual(Projectile projectile, float intensityMultiplier)
@@ -758,6 +1101,121 @@ Shifting:
 			dust.scale = 0.72f + 0.08f * intensityMultiplier;
 			dust.fadeIn = 0.95f;
 		}
+	}
+
+	private static void UpdateSkirmishingProjectileVisual(Projectile projectile, float intensityMultiplier)
+	{
+		float pulse = WeaponPrefixVisuals.GetSkirmishingPulse(projectile.identity * 0.13f) * intensityMultiplier;
+		Color tracerColor = WeaponPrefixVisuals.GetSkirmishingColor(1f, true);
+		Lighting.AddLight(projectile.Center, tracerColor.ToVector3() * (0.12f * pulse));
+
+		if (projectile.owner != Main.myPlayer
+			|| projectile.numUpdates != 0
+			|| projectile.timeLeft % 6 != 0) {
+			return;
+		}
+
+		Vector2 velocityDirection = projectile.velocity.SafeNormalize(Vector2.UnitX * projectile.direction);
+		Vector2 tangent = velocityDirection.RotatedBy(MathHelper.PiOver2);
+		Vector2 offset = tangent * Main.rand.NextFloat(-4f, 4f);
+		Dust dust = Dust.NewDustPerfect(
+			projectile.Center + offset,
+			WeaponPrefixVisuals.SkirmishingDustType,
+			projectile.velocity * -0.045f + tangent * Main.rand.NextFloat(-0.12f, 0.12f),
+			0,
+			tracerColor,
+			0.78f * intensityMultiplier);
+		dust.noGravity = true;
+		dust.fadeIn = 0.92f;
+	}
+
+	private static void UpdateAttunedProjectileVisual(Projectile projectile, bool empowered, float intensityMultiplier)
+	{
+		float pulse = WeaponPrefixVisuals.GetAttunedPulse(projectile.identity * 0.17f) * intensityMultiplier;
+		Color attunedColor = WeaponPrefixVisuals.GetAttunedColor(empowered ? 1f : 0.65f, empowered);
+		float lightStrength = empowered ? 0.22f : 0.12f;
+		Lighting.AddLight(projectile.Center, attunedColor.ToVector3() * (lightStrength * pulse));
+
+		int dustInterval = empowered ? 5 : 8;
+		if (projectile.owner != Main.myPlayer
+			|| projectile.numUpdates != 0
+			|| projectile.timeLeft % dustInterval != 0) {
+			return;
+		}
+
+		Vector2 lateralOffset = projectile.velocity.SafeNormalize(Vector2.UnitX * projectile.direction)
+			.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-4f, 4f);
+		Dust dust = Dust.NewDustPerfect(projectile.Center + lateralOffset, WeaponPrefixVisuals.AttunedDustType);
+		dust.noGravity = true;
+		dust.velocity = projectile.velocity * -0.035f + Main.rand.NextVector2Circular(0.1f, 0.1f);
+		dust.scale = (empowered ? 0.96f : 0.72f) * intensityMultiplier;
+		dust.fadeIn = empowered ? 1.05f : 0.92f;
+	}
+
+	private static void SpawnAttunedImpactEffect(Vector2 position, Vector2 projectileVelocity, bool shifted, float visualMultiplier)
+	{
+		if (Main.myPlayer < 0 || Main.myPlayer >= Main.maxPlayers) {
+			return;
+		}
+
+		Vector2 direction = projectileVelocity.SafeNormalize(Vector2.UnitX);
+		Vector2 tangent = direction.RotatedBy(MathHelper.PiOver2);
+		Color impactColor = WeaponPrefixVisuals.GetAttunedColor(1f, true);
+		float strength = shifted ? 0.28f : 0.22f;
+		Lighting.AddLight(position, impactColor.ToVector3() * (strength * visualMultiplier));
+
+		for (int i = 0; i < 5; i++) {
+			float side = i % 2 == 0 ? -1f : 1f;
+			float lane = 1f + i / 2f;
+			Dust dust = Dust.NewDustPerfect(
+				position + tangent * (2.5f * lane * side),
+				WeaponPrefixVisuals.AttunedDustType,
+				direction * (0.7f + 0.08f * lane) + tangent * (0.18f * lane * side),
+				0,
+				impactColor,
+				0.86f * visualMultiplier);
+			dust.noGravity = true;
+			dust.fadeIn = 0.96f;
+		}
+	}
+
+	private static void UpdateDesperateProjectileVisual(Projectile projectile, float intensityMultiplier)
+	{
+		if (projectile.owner < 0 || projectile.owner >= Main.maxPlayers) {
+			return;
+		}
+
+		Player owner = Main.player[projectile.owner];
+		if (!owner.active || owner.dead) {
+			return;
+		}
+
+		DesperatePlayer desperatePlayer = owner.GetModPlayer<DesperatePlayer>();
+		DesperateThresholdState state = desperatePlayer.CurrentState;
+		if (state == DesperateThresholdState.None) {
+			return;
+		}
+
+		float pulse = WeaponPrefixVisuals.GetDesperatePulse(projectile.identity * 0.23f) * intensityMultiplier;
+		float surgeReadyStrength = state == DesperateThresholdState.Critical
+			? 0.18f + 0.2f * desperatePlayer.GetSurgeCooldownProgress()
+			: 0f;
+		Color stateColor = WeaponPrefixVisuals.GetDesperateColor(state);
+		Lighting.AddLight(projectile.Center, stateColor.ToVector3() * ((0.08f + surgeReadyStrength) * pulse));
+
+		if (projectile.owner != Main.myPlayer
+			|| projectile.numUpdates != 0
+			|| projectile.timeLeft % (state == DesperateThresholdState.Critical ? 6 : state == DesperateThresholdState.Severe ? 8 : 12) != 0) {
+			return;
+		}
+
+		Dust dust = Dust.NewDustPerfect(
+			projectile.Center + Main.rand.NextVector2Circular(4f, 4f),
+			WeaponPrefixVisuals.DesperateDustType);
+		dust.noGravity = true;
+		dust.velocity = projectile.velocity * -0.04f + Main.rand.NextVector2Circular(0.14f, 0.14f);
+		dust.scale = (0.62f + 0.08f * (int)state + surgeReadyStrength * 0.2f) * intensityMultiplier;
+		dust.fadeIn = 0.92f;
 	}
 
 	private static void SpawnSpinboundReleaseEffect(Projectile projectile, int goldenSpinTier)
@@ -1135,16 +1593,31 @@ Shifting:
 		switch (ShiftedSimulationId) {
 			case ShiftingSimulationId.Echoing:
 				break;
-			case ShiftingSimulationId.Headshot:
-				ShiftedHeadshotSpawnPosition = projectile.Center;
+			case ShiftingSimulationId.Skirmishing:
+				if (item != null) {
+					Player owner = Main.player[projectile.owner];
+					if (owner.active && !owner.dead) {
+						IsShiftedSkirmishFollowUpProjectile = owner.GetModPlayer<SkirmishingPlayer>().IsFollowUpProjectileWindowActive();
+					}
+				}
 				break;
-			case ShiftingSimulationId.Siphoning:
-				ShiftedSiphoningManaRestoreAmount = item != null
-					? WeaponPrefixGlobalItem.GetSiphoningManaRestoreAmount(
+			case ShiftingSimulationId.Attuned:
+				if (item != null) {
+					Player owner = Main.player[projectile.owner];
+					if (owner.active && !owner.dead) {
+						IsEmpoweredShiftedAttunedProjectile = owner.GetModPlayer<AttunedPlayer>().IsEmpoweredProjectileWindowActive();
+					}
+				}
+				break;
+			case ShiftingSimulationId.Deadeye:
+				break;
+			case ShiftingSimulationId.Sanguine:
+				ShiftedVampiricManaRestoreAmount = item != null && WeaponPrefix.IsMagicWeapon(item)
+					? WeaponPrefixGlobalItem.GetVampiricManaRestoreAmount(
 						item,
-						ShiftingSimulationCatalog.GetShiftedSiphoningManaRestoreRatio(),
-						ShiftingSimulationCatalog.GetShiftedSiphoningMaxRestorePerHit())
-					: parentGlobal?.ShiftedSiphoningManaRestoreAmount ?? 0;
+						ShiftingSimulationCatalog.GetShiftedVampiricManaRestoreRatio(),
+						ShiftingSimulationCatalog.GetShiftedVampiricMaxRestorePerHit())
+					: parentGlobal?.ShiftedVampiricManaRestoreAmount ?? 0;
 				break;
 			case ShiftingSimulationId.Spinbound:
 				if (item != null) {
@@ -1180,68 +1653,152 @@ Shifting:
 	{
 		return simulationId is ShiftingSimulationId.Sanguine
 			or ShiftingSimulationId.Radiant
-			or ShiftingSimulationId.Stormforged
-			or ShiftingSimulationId.Siphoning
-			or ShiftingSimulationId.Headshot;
+			or ShiftingSimulationId.Stormforged;
 	}
 
-	private void TrySpawnEchoProjectile(Projectile projectile, float procChance, float echoDamageMultiplier)
+	private void TryScheduleFractureCascade(Projectile projectile, float fractureIChance, float fractureIIChance, float fractureIIIChance)
 	{
-		if (projectile == null || !projectile.active || Main.rand.NextFloat() >= procChance) {
+		if (projectile == null
+			|| !projectile.active
+			|| IsSpawnedEchoProjectile
+			|| Main.rand.NextFloat() >= fractureIChance) {
 			return;
 		}
 
-		bool sourceUsesLocalNPCImmunity = projectile.usesLocalNPCImmunity;
-		int sourceLocalNPCHitCooldown = projectile.localNPCHitCooldown;
-		bool sourceUsesIDStaticNPCImmunity = projectile.usesIDStaticNPCImmunity;
-		int sourceIDStaticNPCHitCooldown = projectile.idStaticNPCHitCooldown;
+		InitializeFractureSourceState(projectile);
+		SpawnFracturedProjectile(projectile, 1);
+
+		if (Main.rand.NextFloat() >= fractureIIChance) {
+			return;
+		}
+
+		hasPendingFractureII = true;
+		pendingFractureIIFrames = Main.rand.Next(EchoingPrefix.FractureIIDelayMinFrames, EchoingPrefix.FractureIIDelayMaxFrames + 1);
+		if (Main.rand.NextFloat() >= fractureIIIChance) {
+			return;
+		}
+
+		hasPendingFractureIII = true;
+		int fractureIIIMinFrames = System.Math.Min(
+			EchoingPrefix.FractureIIIDelayMaxFrames,
+			System.Math.Max(EchoingPrefix.FractureIIIDelayMinFrames, pendingFractureIIFrames + 1));
+		pendingFractureIIIFrames = Main.rand.Next(fractureIIIMinFrames, EchoingPrefix.FractureIIIDelayMaxFrames + 1);
+	}
+
+	private void InitializeFractureSourceState(Projectile projectile)
+	{
+		fractureSpawnPosition = projectile.Center;
+		fractureBaseVelocity = projectile.velocity;
+		fractureUsesLocalNPCImmunity = projectile.usesLocalNPCImmunity;
+		fractureLocalNPCHitCooldown = projectile.localNPCHitCooldown;
+		fractureUsesIDStaticNPCImmunity = projectile.usesIDStaticNPCImmunity;
+		fractureIDStaticNPCHitCooldown = projectile.idStaticNPCHitCooldown;
 
 		NormalizeEchoHitTracking(
 			projectile,
-			sourceUsesLocalNPCImmunity,
-			sourceLocalNPCHitCooldown,
-			sourceUsesIDStaticNPCImmunity,
-			sourceIDStaticNPCHitCooldown);
+			fractureUsesLocalNPCImmunity,
+			fractureLocalNPCHitCooldown,
+			fractureUsesIDStaticNPCImmunity,
+			fractureIDStaticNPCHitCooldown);
+	}
 
-		Vector2 echoedVelocity = projectile.velocity.RotatedByRandom(MathHelper.ToRadians(5f));
-		int echoIndex = Projectile.NewProjectile(
-			projectile.GetSource_FromThis("MozandifiersEchoProjectile"),
-			projectile.Center,
-			echoedVelocity,
+	private void ProcessPendingFractures(Projectile projectile)
+	{
+		if (projectile == null
+			|| !projectile.active
+			|| projectile.owner != Main.myPlayer
+			|| projectile.numUpdates != 0) {
+			return;
+		}
+
+		if (hasPendingFractureII && --pendingFractureIIFrames <= 0) {
+			hasPendingFractureII = false;
+			SpawnFracturedProjectile(projectile, 2);
+		}
+
+		if (hasPendingFractureIII && --pendingFractureIIIFrames <= 0) {
+			hasPendingFractureIII = false;
+			SpawnFracturedProjectile(projectile, 3);
+		}
+	}
+
+	private void SpawnFracturedProjectile(Projectile projectile, int fractureTier)
+	{
+		if (projectile == null || !projectile.active) {
+			return;
+		}
+
+		Vector2 baseVelocity = fractureBaseVelocity.LengthSquared() > 0.0001f ? fractureBaseVelocity : projectile.velocity;
+		Vector2 spawnPosition = fractureSpawnPosition == Vector2.Zero ? projectile.Center : fractureSpawnPosition;
+		Vector2 fracturedVelocity = baseVelocity.RotatedByRandom(MathHelper.ToRadians(GetFractureAngleVarianceDegrees(fractureTier)));
+		int fractureIndex = Projectile.NewProjectile(
+			projectile.GetSource_FromThis("MozandifiersFracturedProjectile"),
+			spawnPosition,
+			fracturedVelocity,
 			projectile.type,
 			projectile.damage,
 			projectile.knockBack,
 			projectile.owner);
 
-		if (echoIndex < 0 || echoIndex >= Main.maxProjectiles) {
+		if (fractureIndex < 0 || fractureIndex >= Main.maxProjectiles) {
 			return;
 		}
 
-		Projectile echoedProjectile = Main.projectile[echoIndex];
+		Projectile fracturedProjectile = Main.projectile[fractureIndex];
 		NormalizeEchoHitTracking(
-			echoedProjectile,
-			sourceUsesLocalNPCImmunity,
-			sourceLocalNPCHitCooldown,
-			sourceUsesIDStaticNPCImmunity,
-			sourceIDStaticNPCHitCooldown);
+			fracturedProjectile,
+			fractureUsesLocalNPCImmunity,
+			fractureLocalNPCHitCooldown,
+			fractureUsesIDStaticNPCImmunity,
+			fractureIDStaticNPCHitCooldown);
 
-		WeaponPrefixGlobalProjectile echoGlobal = echoedProjectile.GetGlobalProjectile<WeaponPrefixGlobalProjectile>();
+		WeaponPrefixGlobalProjectile echoGlobal = fracturedProjectile.GetGlobalProjectile<WeaponPrefixGlobalProjectile>();
 		echoGlobal.IsSpawnedEchoProjectile = true;
 		echoGlobal.IsEchoDamageProjectile = true;
 		echoGlobal.IsEchoVisualProjectile = true;
-		echoGlobal.EchoDamageMultiplier = echoDamageMultiplier;
-		SpawnEchoSpawnEffect(echoedProjectile);
-		echoedProjectile.netUpdate = true;
+		echoGlobal.EchoFractureTier = (byte)fractureTier;
+		echoGlobal.EchoDamageMultiplier = GetFractureDamageMultiplier(fractureTier);
+		SpawnFractureSpawnEffect(fracturedProjectile, fractureTier);
+		fracturedProjectile.netUpdate = true;
 	}
 
-	private static void SpawnEchoSpawnEffect(Projectile projectile)
+	private static float GetFractureDamageMultiplier(int fractureTier)
 	{
-		for (int i = 0; i < 6; i++) {
-			Vector2 velocity = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(0.8f, 1.8f);
-			Dust dust = Dust.NewDustPerfect(projectile.Center, WeaponPrefixVisuals.EchoDustType, velocity);
+		return fractureTier switch {
+			2 => EchoingPrefix.FractureIIDamageMultiplier,
+			>= 3 => EchoingPrefix.FractureIIIDamageMultiplier,
+			_ => EchoingPrefix.FractureIDamageMultiplier
+		};
+	}
+
+	private static float GetFractureAngleVarianceDegrees(int fractureTier)
+	{
+		return fractureTier switch {
+			2 => EchoingPrefix.FractureIIAngleVarianceDegrees,
+			>= 3 => EchoingPrefix.FractureIIIAngleVarianceDegrees,
+			_ => EchoingPrefix.FractureIAngleVarianceDegrees
+		};
+	}
+
+	private static void SpawnFractureSpawnEffect(Projectile projectile, int fractureTier)
+	{
+		Color fractureColor = WeaponPrefixVisuals.GetFracturedTint(fractureTier);
+		int dustCount = fractureTier switch {
+			2 => 7,
+			>= 3 => 8,
+			_ => 6
+		};
+
+		Lighting.AddLight(projectile.Center, fractureColor.ToVector3() * (0.14f + 0.03f * fractureTier));
+		for (int i = 0; i < dustCount; i++) {
+			Vector2 velocity = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(0.7f + fractureTier * 0.1f, 1.6f + fractureTier * 0.15f);
+			Dust dust = Dust.NewDustPerfect(projectile.Center, WeaponPrefixVisuals.EchoDustType, velocity, 0, fractureColor, 0.72f + 0.08f * fractureTier);
 			dust.noGravity = true;
-			dust.scale = 0.8f;
-			dust.fadeIn = 0.85f;
+			dust.fadeIn = 0.9f + 0.02f * fractureTier;
+		}
+
+		if (projectile.owner == Main.myPlayer && fractureTier == 1) {
+			SoundEngine.PlaySound(SoundID.Item8, projectile.Center);
 		}
 	}
 }

@@ -6,10 +6,22 @@ namespace Mozandifiers.Common.Players;
 public sealed class TemporalFeedbackPlayer : ModPlayer
 {
 	private ulong lastUsePulseTick;
+	private ulong lastPressureVisualTick;
+	private ulong lastCollapseVisualTick;
 
 	internal bool CanEmitUsePulse()
 	{
 		return TryConsumeWindow(ref lastUsePulseTick, 6);
+	}
+
+	internal bool CanEmitPressureVisual()
+	{
+		return TryConsumeWindow(ref lastPressureVisualTick, 6);
+	}
+
+	internal bool CanEmitCollapseVisual()
+	{
+		return TryConsumeWindow(ref lastCollapseVisualTick, 12);
 	}
 
 	private static bool TryConsumeWindow(ref ulong lastTick, int cooldownTicks)

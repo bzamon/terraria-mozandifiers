@@ -10,6 +10,15 @@ public sealed class TemporalPrefix : WeaponPrefix
 {
 	public const float AttackSpeedMultiplier = 2f;
 	public const float ProjectileSpeedMultiplier = 2f;
+	public const float PressureMax = 100f;
+	public const float BasePressurePerHit = 4f;
+	public const float DamagePressureFactor = 120f;
+	public const float TempoBonusPressure = 2f;
+	public const int TempoBonusWindowTicks = 45;
+	public const float BossPressureMultiplier = 0.65f;
+	public const int FractureDurationTicks = 90;
+	public const int FractureCooldownTicks = 240;
+	public const float ReleaseMultiplier = 1.15f;
 
 	protected override float PrefixRollChance => 0.6f;
 	protected override float PrefixValueMultiplier => 1.5f;
@@ -44,5 +53,15 @@ public sealed class TemporalPrefix : WeaponPrefix
 				$"Mods.{Mod.Name}.Prefixes.{Name}.TemporalTooltip",
 				(int)((AttackSpeedMultiplier - 1f) * 100f),
 				(int)((ProjectileSpeedMultiplier - 1f) * 100f)));
+
+		yield return new TooltipLine(
+			Mod,
+			$"{Name}Fracture",
+			Language.GetTextValue(
+				$"Mods.{Mod.Name}.Prefixes.{Name}.FractureTooltip",
+				(int)PressureMax,
+				FractureDurationTicks / 60f,
+				(int)((ReleaseMultiplier - 1f) * 100f),
+				FractureCooldownTicks / 60f));
 	}
 }

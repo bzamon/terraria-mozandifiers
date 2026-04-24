@@ -90,6 +90,15 @@ public abstract class WeaponPrefix : BasePrefix
 			&& !IsProjectileWeapon(item);
 	}
 
+	internal static bool IsStandardSwordWeapon(Item item)
+	{
+		return IsSwingingMeleeWeapon(item)
+			&& item.useTurn
+			&& item.pick == 0
+			&& item.axe == 0
+			&& item.hammer == 0;
+	}
+
 	internal static bool IsHeavyWeapon(Item item)
 	{
 		return IsStandardWeapon(item)
@@ -153,7 +162,7 @@ public abstract class WeaponPrefix : BasePrefix
 			ProjAIStyleID.Boomerang => EchoingWeaponMode.MeleeBoomerang,
 			ProjAIStyleID.Flail => EchoingWeaponMode.MeleeFlail,
 			ProjAIStyleID.Yoyo => EchoingWeaponMode.MeleeChannelled,
-			ProjAIStyleID.Drill or ProjAIStyleID.HeldProjectile => EchoingWeaponMode.MeleeSpecial,
+			ProjAIStyleID.Drill or ProjAIStyleID.HeldProjectile => EchoingWeaponMode.None,
 			_ => itemChannels ? EchoingWeaponMode.MeleeChannelled : EchoingWeaponMode.MeleeSpecial
 		};
 	}
@@ -163,6 +172,7 @@ public abstract class WeaponPrefix : BasePrefix
 		return mode is EchoingWeaponMode.RangedProjectile
 			or EchoingWeaponMode.MagicProjectile
 			or EchoingWeaponMode.MeleeThrust
-			or EchoingWeaponMode.MeleeBoomerang;
+			or EchoingWeaponMode.MeleeBoomerang
+			or EchoingWeaponMode.MeleeSpecial;
 	}
 }

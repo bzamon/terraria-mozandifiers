@@ -1,6 +1,6 @@
 Adds custom weapon prefixes to Terraria through tModLoader, with two included bonus vanity pets based on my real dogs.
 
 Current version includes:
-- 14 weapon prefixes: Echoing, Attuned, Breaching, Skirmishing, Sanguine, Radiant, Stormforged, Temporal, Desperate, Siphoning, Catalytic, Headshot, Spinbound, and Shifting
+- 14 weapon prefixes: Fractured, Attuned, Awakened, Breaching, Skirmishing, Vampiric, Radiant, Stormforged, Temporal, Desperate, Catalytic, Deadeye, Spinbound, and Shifting
 - 2 bonus vanity dog pets: Amelia and Ludovica
-- 2 server-side mod config sliders: Echo chance and Breaching heavy size
+- 4 server-side mod config sliders: Fracture I/II/III chance and Breaching heavy size

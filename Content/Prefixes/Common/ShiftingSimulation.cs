@@ -17,15 +17,13 @@ internal enum ShiftingWeaponMode : byte
 internal enum ShiftingSimulationId : byte
 {
 	None,
-	Colossal,
 	Breaching,
 	Attuned,
 	Skirmishing,
 	Desperate,
 	Radiant,
 	Sanguine,
-	Siphoning,
-	Headshot,
+	Deadeye,
 	Temporal,
 	Echoing,
 	Stormforged,
@@ -47,7 +45,7 @@ internal static class ShiftingSimulationCatalog
 	private static readonly ShiftingSimulationId[] RangedPool = [
 		ShiftingSimulationId.Breaching,
 		ShiftingSimulationId.Skirmishing,
-		ShiftingSimulationId.Headshot,
+		ShiftingSimulationId.Deadeye,
 		ShiftingSimulationId.Desperate,
 		ShiftingSimulationId.Radiant,
 		ShiftingSimulationId.Sanguine,
@@ -59,7 +57,6 @@ internal static class ShiftingSimulationCatalog
 
 	private static readonly ShiftingSimulationId[] MagicPool = [
 		ShiftingSimulationId.Attuned,
-		ShiftingSimulationId.Siphoning,
 		ShiftingSimulationId.Desperate,
 		ShiftingSimulationId.Radiant,
 		ShiftingSimulationId.Sanguine,
@@ -128,8 +125,7 @@ internal static class ShiftingSimulationCatalog
 			ShiftingSimulationId.Desperate => "DesperatePrefix",
 			ShiftingSimulationId.Radiant => "RadiantPrefix",
 			ShiftingSimulationId.Sanguine => "SanguinePrefix",
-			ShiftingSimulationId.Siphoning => "SiphoningPrefix",
-			ShiftingSimulationId.Headshot => "HeadshotPrefix",
+			ShiftingSimulationId.Deadeye => "DeadeyePrefix",
 			ShiftingSimulationId.Temporal => "TemporalPrefix",
 			ShiftingSimulationId.Echoing => "EchoingPrefix",
 			ShiftingSimulationId.Stormforged => "StormforgedPrefix",
@@ -178,10 +174,9 @@ internal static class ShiftingSimulationCatalog
 		return simulationId switch {
 			ShiftingSimulationId.Breaching => ScaleValue(BreachingPrefix.CritBonus),
 			ShiftingSimulationId.Skirmishing => ScaleValue(4f),
-			ShiftingSimulationId.Desperate => ScaleValue(5f),
+			ShiftingSimulationId.Desperate => ScaleValue(DesperatePrefix.CritBonus),
 			ShiftingSimulationId.Radiant => ScaleValue(2f),
-			ShiftingSimulationId.Siphoning => ScaleValue(2f),
-			ShiftingSimulationId.Headshot => ScaleValue(6f),
+			ShiftingSimulationId.Deadeye => ScaleValue(6f),
 			ShiftingSimulationId.Temporal => ScaleValue(3f),
 			ShiftingSimulationId.Echoing => ScaleValue(-8f),
 			ShiftingSimulationId.Stormforged => ScaleValue(4f),
@@ -199,7 +194,6 @@ internal static class ShiftingSimulationCatalog
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(0.9f),
 			ShiftingSimulationId.Desperate => ScaleMultiplierFromNeutral(1.05f),
 			ShiftingSimulationId.Radiant => ScaleMultiplierFromNeutral(0.96f),
-			ShiftingSimulationId.Siphoning => ScaleMultiplierFromNeutral(0.9f),
 			ShiftingSimulationId.Temporal => ScaleMultiplierFromNeutral(0.5f),
 			ShiftingSimulationId.Echoing => ScaleMultiplierFromNeutral(0.95f),
 			ShiftingSimulationId.Stormforged => ScaleMultiplierFromNeutral(0.96f),
@@ -216,7 +210,7 @@ internal static class ShiftingSimulationCatalog
 			ShiftingSimulationId.Attuned => ScaleMultiplierFromNeutral(0.9f),
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(0.85f),
 			ShiftingSimulationId.Radiant => ScaleMultiplierFromNeutral(0.95f),
-			ShiftingSimulationId.Headshot => ScaleMultiplierFromNeutral(0.9f),
+			ShiftingSimulationId.Deadeye => ScaleMultiplierFromNeutral(0.9f),
 			ShiftingSimulationId.Temporal => ScaleMultiplierFromNeutral(0.9f),
 			ShiftingSimulationId.Spinbound => ScaleMultiplierFromNeutral(0.92f),
 			_ => 1f
@@ -229,7 +223,7 @@ internal static class ShiftingSimulationCatalog
 			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.UseTimeMultiplierValue),
 			ShiftingSimulationId.Attuned => ScaleMultiplierFromNeutral(0.88f),
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(0.8f),
-			ShiftingSimulationId.Headshot => ScaleMultiplierFromNeutral(1.12f),
+			ShiftingSimulationId.Deadeye => ScaleMultiplierFromNeutral(1.12f),
 			ShiftingSimulationId.Temporal => 1f / 2.5f,
 			ShiftingSimulationId.Echoing => ScaleMultiplierFromNeutral(1.12f),
 			ShiftingSimulationId.Stormforged => ScaleMultiplierFromNeutral(1.06f),
@@ -243,7 +237,7 @@ internal static class ShiftingSimulationCatalog
 		return simulationId switch {
 			ShiftingSimulationId.Attuned => ScaleMultiplierFromNeutral(1.1f),
 			ShiftingSimulationId.Skirmishing => ScaleMultiplierFromNeutral(1.2f),
-			ShiftingSimulationId.Headshot => ScaleMultiplierFromNeutral(1.1f),
+			ShiftingSimulationId.Deadeye => ScaleMultiplierFromNeutral(1.1f),
 			ShiftingSimulationId.Temporal => 2.5f,
 			ShiftingSimulationId.Spinbound => ScaleMultiplierFromNeutral(1.12f),
 			_ => 1f
@@ -258,10 +252,40 @@ internal static class ShiftingSimulationCatalog
 		};
 	}
 
-	internal static float GetShiftedScaleMultiplier(ShiftingSimulationId simulationId, float colossalScaleMultiplier)
+	internal static float GetShiftedAttunedEmpoweredShootSpeedMultiplier()
+	{
+		return ScaleMultiplierFromNeutral(AttunedPrefix.EmpoweredCastShootSpeedMultiplier);
+	}
+
+	internal static float GetShiftedSkirmishingMoveSpeedBonus()
+	{
+		return ScaleValue(SkirmishingPrefix.MobilityMoveSpeedBonus);
+	}
+
+	internal static float GetShiftedSkirmishingRunAccelerationMultiplier()
+	{
+		return ScaleMultiplierFromNeutral(SkirmishingPrefix.MobilityRunAccelerationMultiplier);
+	}
+
+	internal static float GetShiftedSkirmishingMaxRunSpeedBonus()
+	{
+		return ScaleValue(SkirmishingPrefix.MobilityMaxRunSpeedBonus);
+	}
+
+	internal static float GetShiftedSkirmishingFollowUpShootSpeedMultiplier()
+	{
+		return ScaleMultiplierFromNeutral(SkirmishingPrefix.FollowUpShootSpeedMultiplier);
+	}
+
+	internal static float GetShiftedSkirmishingFollowUpCritDamageBonus()
+	{
+		return ScaleValue(SkirmishingPrefix.FollowUpCritDamageBonus);
+	}
+
+	internal static float GetShiftedScaleMultiplier(ShiftingSimulationId simulationId, float breachingScaleMultiplier)
 	{
 		return simulationId switch {
-			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.GetMergedScaleMultiplier(colossalScaleMultiplier)),
+			ShiftingSimulationId.Breaching => ScaleMultiplierFromNeutral(BreachingPrefix.GetMergedScaleMultiplier(breachingScaleMultiplier)),
 			_ => 1f
 		};
 	}
@@ -269,6 +293,11 @@ internal static class ShiftingSimulationCatalog
 	internal static float GetShiftedDesperateMaxDamageBonus()
 	{
 		return ScaleValue(DesperatePrefix.MaxDamageBonus);
+	}
+
+	internal static float GetShiftedDesperateSurgeDamageBonus()
+	{
+		return ScaleValue(DesperatePrefix.SurgeDamageBonus);
 	}
 
 	internal static int GetShiftedRadiantDurationTicks()
@@ -288,47 +317,57 @@ internal static class ShiftingSimulationCatalog
 
 	internal static int GetShiftedSanguineHealCapPerSecond()
 	{
-		return ScalePositiveRoundedInt(5);
+		return ScalePositiveRoundedInt(SanguinePrefix.BaseHealCapPerSecond);
 	}
 
-	internal static float GetShiftedSiphoningManaRestoreRatio()
+	internal static float GetShiftedVampiricManaRestoreRatio()
 	{
-		return ScaleValue(SiphoningPrefix.ManaRestoreFromManaCost);
+		return ScaleValue(SanguinePrefix.ManaRestoreFromManaCost);
 	}
 
-	internal static int GetShiftedSiphoningMaxRestorePerHit()
+	internal static int GetShiftedVampiricMaxRestorePerHit()
 	{
-		return ScalePositiveRoundedInt(SiphoningPrefix.MaxManaRestorePerHit);
+		return ScalePositiveRoundedInt(SanguinePrefix.MaxManaRestorePerHit);
 	}
 
-	internal static int GetShiftedSiphoningMaxRestorePerSecond()
+	internal static int GetShiftedVampiricMaxRestorePerSecond()
 	{
-		return ScalePositiveRoundedInt(SiphoningPrefix.MaxManaRestorePerSecond);
+		return ScalePositiveRoundedInt(SanguinePrefix.BaseManaRestorePerSecond);
 	}
 
-	internal static float GetShiftedHeadshotMaxDistanceDamageBonus()
+	internal static float GetShiftedDeadeyeVelocityMultiplier()
 	{
-		return ScaleValue(HeadshotPrefix.MaxDistanceDamageBonus);
+		return ScaleMultiplierFromNeutral(DeadeyePrefix.DeadeyeShotVelocityMultiplier);
 	}
 
-	internal static float GetShiftedHeadshotCritDamageBonus()
+	internal static int GetShiftedDeadeyeCritChanceBonus()
 	{
-		return ScaleValue(HeadshotPrefix.CritDamageBonus);
+		return ScaleRoundedInt(DeadeyePrefix.DeadeyeShotCritChanceBonus);
 	}
 
-	internal static float GetShiftedHeadshotLongRangeCritDamageBonus()
+	internal static float GetShiftedDeadeyeCritDamageBonus()
 	{
-		return ScaleValue(HeadshotPrefix.LongRangeCritDamageBonus);
+		return ScaleValue(DeadeyePrefix.DeadeyeShotCritDamageBonus);
 	}
 
-	internal static float GetShiftedEchoChance()
+	internal static float GetShiftedDeadeyeBurstDamageRatio()
 	{
-		return System.MathF.Min(1f, PrefixTuningConfig.Instance.EchoChance * ShiftingPrefix.ShiftingStrengthMultiplier);
+		return ScaleValue(DeadeyePrefix.CriticalBurstDamageRatio);
 	}
 
-	internal static float GetShiftedEchoDamageMultiplier()
+	internal static float GetShiftedFractureIChance()
 	{
-		return 0.75f;
+		return System.MathF.Min(1f, PrefixTuningConfig.Instance.FractureIChance * ShiftingPrefix.ShiftingStrengthMultiplier);
+	}
+
+	internal static float GetShiftedFractureIIChance()
+	{
+		return System.MathF.Min(1f, PrefixTuningConfig.Instance.FractureIIChance * ShiftingPrefix.ShiftingStrengthMultiplier);
+	}
+
+	internal static float GetShiftedFractureIIIChance()
+	{
+		return System.MathF.Min(1f, PrefixTuningConfig.Instance.FractureIIIChance * ShiftingPrefix.ShiftingStrengthMultiplier);
 	}
 
 	internal static float GetShiftedStormforgedProcChance()

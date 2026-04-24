@@ -60,7 +60,7 @@ public sealed class BreachingPrefix : WeaponPrefix
 				$"{Name}Size",
 				Language.GetTextValue(
 					$"Mods.{Mod.Name}.Prefixes.{Name}.SizeTooltip",
-					(int)((GetMergedScaleMultiplier(PrefixTuningConfig.Instance.ColossalScaleMultiplier) - 1f) * 100f)));
+					(int)((GetMergedScaleMultiplier(PrefixTuningConfig.Instance.BreachingScaleMultiplier) - 1f) * 100f)));
 		}
 	}
 
@@ -98,9 +98,9 @@ public sealed class BreachingPrefix : WeaponPrefix
 			&& item.useAnimation >= 25;
 	}
 
-	internal static float GetMergedScaleMultiplier(float colossalScaleMultiplier)
+	internal static float GetMergedScaleMultiplier(float breachingScaleMultiplier)
 	{
-		return 1f + ((colossalScaleMultiplier - 1f) * 0.75f);
+		return 1f + ((breachingScaleMultiplier - 1f) * 0.75f);
 	}
 
 	internal static float GetBreachImpactMultiplier(Item item)
@@ -112,7 +112,7 @@ public sealed class BreachingPrefix : WeaponPrefix
 		float useAnimationWeight = MathHelper.Clamp((item.useAnimation - 25f) / 25f, 0f, 1f) * 0.45f;
 		float knockbackWeight = MathHelper.Clamp(item.knockBack / 10f, 0f, 1f) * 0.25f;
 		float launcherWeight = item.useAmmo == AmmoID.Rocket ? 0.25f : 0f;
-		float colossalWeight = SupportsMergedScale(item) ? 0.15f : 0f;
-		return MathHelper.Clamp(1f + useAnimationWeight + knockbackWeight + launcherWeight + colossalWeight, 1f, 1.85f);
+		float heavySizeWeight = SupportsMergedScale(item) ? 0.15f : 0f;
+		return MathHelper.Clamp(1f + useAnimationWeight + knockbackWeight + launcherWeight + heavySizeWeight, 1f, 1.85f);
 	}
 }
