@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -8,16 +9,16 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class DeadeyePrefix : WeaponPrefix
 {
-	public const int ReadyIntervalTicks = 300;
-	public const int StationaryReadyTicks = 120;
-	public const int ProjectileAssignmentLockoutTicks = 6;
-	public const float StationaryTolerancePixels = 2f;
-	public const float DeadeyeShotVelocityMultiplier = 1.2f;
-	public const int DeadeyeShotCritChanceBonus = 20;
-	public const float DeadeyeShotCritDamageBonus = 0.35f;
-	public const float CriticalBurstDamageRatio = 0.3f;
-	public const float CriticalBurstRadiusPixels = 120f;
-	public const float BossBurstDamageMultiplier = 0.5f;
+	public static int ReadyIntervalTicks => PrefixTuningConfig.Instance.DeadeyeReadyIntervalTicks;
+	public static int StationaryReadyTicks => PrefixTuningConfig.Instance.DeadeyeStationaryReadyTicks;
+	public static int ProjectileAssignmentLockoutTicks => PrefixTuningConfig.Instance.DeadeyeProjectileAssignmentLockoutTicks;
+	public static float StationaryTolerancePixels => PrefixTuningConfig.Instance.DeadeyeStationaryTolerancePixels;
+	public static float DeadeyeShotVelocityMultiplier => PrefixTuningConfig.Instance.DeadeyeShotVelocityMultiplier;
+	public static int DeadeyeShotCritChanceBonus => PrefixTuningConfig.Instance.DeadeyeShotCritChanceBonus;
+	public static float DeadeyeShotCritDamageBonus => PrefixTuningConfig.Instance.DeadeyeShotCritDamageBonus;
+	public static float CriticalBurstDamageRatio => PrefixTuningConfig.Instance.DeadeyeCriticalBurstDamageRatio;
+	public static float CriticalBurstRadiusPixels => PrefixTuningConfig.Instance.DeadeyeCriticalBurstRadiusPixels;
+	public static float BossBurstDamageMultiplier => PrefixTuningConfig.Instance.DeadeyeBossBurstDamageMultiplier;
 
 	protected override float PrefixRollChance => 0.7f;
 	protected override float PrefixValueMultiplier => 1.45f;

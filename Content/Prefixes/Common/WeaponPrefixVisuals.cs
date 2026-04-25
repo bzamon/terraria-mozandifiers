@@ -9,8 +9,9 @@ internal static class WeaponPrefixVisuals
 {
 	internal static readonly Color AttunedBaseColor = new(124, 204, 255);
 	internal static readonly Color AttunedReadyColor = new(210, 244, 255);
-	internal static readonly Color AwakenedDormantColor = new(132, 182, 255);
-	internal static readonly Color AwakenedActiveColor = new(210, 232, 255);
+	internal static readonly Color AwakenedDormantColor = new(164, 40, 52);
+	internal static readonly Color AwakenedActiveColor = new(244, 72, 64);
+	internal static readonly Color AwakenedSealedColor = new(38, 10, 16);
 	internal static readonly Color SkirmishingWindowColor = new(198, 226, 162);
 	internal static readonly Color SkirmishingFollowUpColor = new(236, 251, 198);
 	internal static readonly Color SkirmishingTracerTint = new(214, 244, 170, 56);
@@ -122,6 +123,7 @@ internal static class WeaponPrefixVisuals
 		return state switch {
 			AwakenedState.Dormant => Color.Lerp(Color.Transparent, AwakenedDormantColor, System.MathF.Min(1f, progress)),
 			AwakenedState.Awakened => Color.Lerp(AwakenedDormantColor, AwakenedActiveColor, 0.75f + 0.25f * progress),
+			AwakenedState.RecoveryLockout => Color.Lerp(AwakenedSealedColor, AwakenedDormantColor, 0.22f + 0.38f * (1f - progress)),
 			_ => Color.Transparent
 		};
 	}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -6,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace Mozandifiers.Content.Prefixes.Weapons;
 
-internal enum VampiricPreyState : byte
+public enum VampiricPreyState : byte
 {
 	None,
 	Weakened,
@@ -16,26 +17,26 @@ internal enum VampiricPreyState : byte
 
 public sealed class SanguinePrefix : WeaponPrefix
 {
-	public const float LifeStealMultiplier = 0.08f;
-	public const float ManaRestoreFromManaCost = 0.2f;
-	public const int MaxManaRestorePerHit = 2;
-	public const int BaseHealCapPerSecond = 5;
-	public const int BaseManaRestorePerSecond = 6;
+	public static float LifeStealMultiplier => PrefixTuningConfig.Instance.VampiricLifeStealMultiplier;
+	public static float ManaRestoreFromManaCost => PrefixTuningConfig.Instance.VampiricManaRestoreFromManaCost;
+	public static int MaxManaRestorePerHit => PrefixTuningConfig.Instance.VampiricMaxManaRestorePerHit;
+	public static int BaseHealCapPerSecond => PrefixTuningConfig.Instance.VampiricBaseHealCapPerSecond;
+	public static int BaseManaRestorePerSecond => PrefixTuningConfig.Instance.VampiricBaseManaRestorePerSecond;
 	public const int SustainWindowTicks = 60;
-	public const float CriticalFeedMultiplier = 1.35f;
-	public const float WeakenedPreyThreshold = 0.5f;
-	public const float BloodiedPreyThreshold = 0.25f;
-	public const float CriticalPreyThreshold = 0.125f;
-	public const float WeakenedFeedMultiplier = 1.15f;
-	public const float BloodiedFeedMultiplier = 1.3f;
-	public const float CriticalFeedStateMultiplier = 1.5f;
-	public const int FrenzyDurationTicks = 180;
-	public const int FrenzyRetriggerCooldownTicks = 900;
-	public const float FrenzyAttackSpeedBonus = 0.12f;
-	public const float FrenzyCapMultiplier = 1.5f;
-	public const int FrenzyCritBonusAgainstWeakened = 4;
-	public const int FrenzyCritBonusAgainstBloodied = 7;
-	public const int FrenzyCritBonusAgainstCritical = 10;
+	public static float CriticalFeedMultiplier => PrefixTuningConfig.Instance.VampiricCriticalFeedMultiplier;
+	public static float WeakenedPreyThreshold => PrefixTuningConfig.Instance.VampiricWeakenedPreyThreshold;
+	public static float BloodiedPreyThreshold => PrefixTuningConfig.Instance.VampiricBloodiedPreyThreshold;
+	public static float CriticalPreyThreshold => PrefixTuningConfig.Instance.VampiricCriticalPreyThreshold;
+	public static float WeakenedFeedMultiplier => PrefixTuningConfig.Instance.VampiricWeakenedFeedMultiplier;
+	public static float BloodiedFeedMultiplier => PrefixTuningConfig.Instance.VampiricBloodiedFeedMultiplier;
+	public static float CriticalFeedStateMultiplier => PrefixTuningConfig.Instance.VampiricCriticalFeedStateMultiplier;
+	public static int FrenzyDurationTicks => PrefixTuningConfig.Instance.VampiricFrenzyDurationTicks;
+	public static int FrenzyRetriggerCooldownTicks => PrefixTuningConfig.Instance.VampiricFrenzyRetriggerCooldownTicks;
+	public static float FrenzyAttackSpeedBonus => PrefixTuningConfig.Instance.VampiricFrenzyAttackSpeedBonus;
+	public static float FrenzyCapMultiplier => PrefixTuningConfig.Instance.VampiricFrenzyCapMultiplier;
+	public static int FrenzyCritBonusAgainstWeakened => PrefixTuningConfig.Instance.VampiricFrenzyCritBonusAgainstWeakened;
+	public static int FrenzyCritBonusAgainstBloodied => PrefixTuningConfig.Instance.VampiricFrenzyCritBonusAgainstBloodied;
+	public static int FrenzyCritBonusAgainstCritical => PrefixTuningConfig.Instance.VampiricFrenzyCritBonusAgainstCritical;
 
 	protected override float PrefixRollChance => 0.8f;
 	protected override float PrefixValueMultiplier => 1.45f;

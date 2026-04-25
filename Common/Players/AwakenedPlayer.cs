@@ -1,5 +1,7 @@
+using Mozandifiers.Content.Buffs;
 using Mozandifiers.Content.Prefixes.Weapons;
 using Terraria;
+using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace Mozandifiers.Common.Players;
@@ -12,6 +14,10 @@ public sealed class AwakenedPlayer : ModPlayer
 	private ulong lastAwakenedAuraVisualTick;
 	private ulong lastBuildFeedbackTick;
 	private ulong lastAwakenedStrikeVisualTick;
+	private ulong lastSweetSpotTelegraphTick;
+	private Rectangle currentSwingHitbox;
+	private ulong currentSwingHitboxTick;
+	private bool hasCurrentSwingHitbox;
 
 	internal AwakenedState CurrentState { get; private set; }
 	internal float MeterProgress { get; private set; }
@@ -34,6 +40,8 @@ public sealed class AwakenedPlayer : ModPlayer
 			recoveryEndTick = 0;
 			MeterProgress = 0f;
 		}
+
+		UpdateStateBuffs();
 	}
 
 	public override void UpdateDead()
@@ -106,12 +114,77 @@ public sealed class AwakenedPlayer : ModPlayer
 		return TryConsumeWindow(ref lastAwakenedStrikeVisualTick, 4);
 	}
 
+	internal bool CanEmitSweetSpotTelegraph()
+	{
+		return TryConsumeWindow(ref lastSweetSpotTelegraphTick, 2);
+	}
+
+	internal void UpdateCurrentSwingHitbox(Rectangle hitbox, bool noHitbox)
+	{
+		hasCurrentSwingHitbox = !noHitbox;
+		if (!hasCurrentSwingHitbox) {
+			currentSwingHitbox = Rectangle.Empty;
+			currentSwingHitboxTick = 0;
+			return;
+		}
+
+		currentSwingHitbox = hitbox;
+		currentSwingHitboxTick = Main.GameUpdateCount;
+	}
+
+	internal bool TryGetCurrentSwingHitbox(out Rectangle hitbox)
+	{
+		if (!hasCurrentSwingHitbox || currentSwingHitboxTick != Main.GameUpdateCount) {
+			hitbox = Rectangle.Empty;
+			return false;
+		}
+
+		hitbox = currentSwingHitbox;
+		return true;
+	}
+
+	internal int GetAwakenedRemainingTicks()
+	{
+		if (!IsAwakened || awakenedEndTick <= Main.GameUpdateCount) {
+			return 0;
+		}
+
+		return (int)(awakenedEndTick - Main.GameUpdateCount);
+	}
+
+	internal int GetRecoveryRemainingTicks()
+	{
+		if (!IsInRecoveryLockout || recoveryEndTick <= Main.GameUpdateCount) {
+			return 0;
+		}
+
+		return (int)(recoveryEndTick - Main.GameUpdateCount);
+	}
+
 	private void ResetState()
 	{
 		CurrentState = AwakenedState.Dormant;
 		MeterProgress = 0f;
 		awakenedEndTick = 0;
 		recoveryEndTick = 0;
+		currentSwingHitbox = Rectangle.Empty;
+		currentSwingHitboxTick = 0;
+		hasCurrentSwingHitbox = false;
+	}
+
+	private void UpdateStateBuffs()
+	{
+		Player.ClearBuff(ModContent.BuffType<AwakenedBuff>());
+		Player.ClearBuff(ModContent.BuffType<SealedDebuff>());
+
+		if (IsAwakened) {
+			Player.AddBuff(ModContent.BuffType<AwakenedBuff>(), System.Math.Max(2, GetAwakenedRemainingTicks()));
+			return;
+		}
+
+		if (IsInRecoveryLockout) {
+			Player.AddBuff(ModContent.BuffType<SealedDebuff>(), System.Math.Max(2, GetRecoveryRemainingTicks()));
+		}
 	}
 
 	private static bool TryConsumeWindow(ref ulong lastTick, int cooldownTicks)

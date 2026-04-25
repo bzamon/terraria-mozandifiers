@@ -69,7 +69,7 @@ public sealed class ShiftingPlayer : ModPlayer
 			|| item.prefix != ModContent.PrefixType<ShiftingPrefix>()
 			|| ActiveSimulationId == ShiftingSimulationId.None
 			|| ActiveItemType != item.type
-			|| !ShiftingSimulationCatalog.TryGetWeaponMode(item, out ShiftingWeaponMode mode)
+			|| !ShiftingSimulationPools.TryGetWeaponMode(item, out ShiftingWeaponMode mode)
 			|| mode != ActiveWeaponMode) {
 			simulationId = ShiftingSimulationId.None;
 			return false;
@@ -114,7 +114,7 @@ public sealed class ShiftingPlayer : ModPlayer
 		if (item == null
 			|| item.IsAir
 			|| item.prefix != ModContent.PrefixType<ShiftingPrefix>()
-			|| !ShiftingSimulationCatalog.TryGetWeaponMode(item, out ShiftingWeaponMode weaponMode)) {
+			|| !ShiftingSimulationPools.TryGetWeaponMode(item, out ShiftingWeaponMode weaponMode)) {
 			return;
 		}
 
@@ -133,7 +133,7 @@ public sealed class ShiftingPlayer : ModPlayer
 	private void RollNewSimulation(Item item, ShiftingWeaponMode weaponMode, ulong currentTick)
 	{
 		ShiftingSimulationId oldSimulationId = ActiveSimulationId;
-		ShiftingSimulationId selectedSimulationId = ShiftingSimulationCatalog.SelectNextSimulation(
+		ShiftingSimulationId selectedSimulationId = ShiftingSimulationPools.SelectNextSimulation(
 			weaponMode,
 			PreviousSimulationId,
 			currentTick,
@@ -191,7 +191,7 @@ public sealed class ShiftingPlayer : ModPlayer
 			return;
 		}
 
-		string simulationName = ShiftingSimulationCatalog.GetDisplayName(Mod.Name, newSimulationId);
+		string simulationName = ShiftingSimulationDisplay.GetDisplayName(Mod.Name, newSimulationId);
 		if (string.IsNullOrEmpty(simulationName)) {
 			return;
 		}
@@ -207,7 +207,7 @@ public sealed class ShiftingPlayer : ModPlayer
 		if (heldItem == null
 			|| heldItem.IsAir
 			|| heldItem.prefix != ModContent.PrefixType<ShiftingPrefix>()
-			|| !ShiftingSimulationCatalog.TryGetWeaponMode(heldItem, out weaponMode)) {
+			|| !ShiftingSimulationPools.TryGetWeaponMode(heldItem, out weaponMode)) {
 			weaponMode = ShiftingWeaponMode.None;
 			return false;
 		}

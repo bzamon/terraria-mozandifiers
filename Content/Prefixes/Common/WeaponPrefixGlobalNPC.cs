@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Terraria.Audio;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -50,7 +51,6 @@ public sealed class WeaponPrefixGlobalNPC : GlobalNPC
 	private readonly int[] temporalStoredDamageByPlayer = new int[Main.maxPlayers];
 
 	public override bool InstancePerEntity => true;
-
 	public override void PostAI(NPC npc)
 	{
 		bool hasActualMark = HasActiveCatalyticMark(false);
@@ -251,7 +251,12 @@ public sealed class WeaponPrefixGlobalNPC : GlobalNPC
 
 		int collapseDamage = System.Math.Max(1, (int)System.MathF.Round(storedDamage * TemporalPrefix.ReleaseMultiplier));
 		if (Main.netMode != NetmodeID.MultiplayerClient) {
-			npc.SimpleStrikeNPC(collapseDamage, 0);
+			NPC.HitInfo hitInfo = new() {
+				Damage = collapseDamage,
+				HitDirection = 0,
+				HideCombatText = true
+			};
+			npc.StrikeNPC(hitInfo);
 			npc.netUpdate = true;
 		}
 
@@ -260,7 +265,12 @@ public sealed class WeaponPrefixGlobalNPC : GlobalNPC
 			if (player.active && !player.dead) {
 				TemporalFeedbackPlayer temporalPlayer = player.GetModPlayer<TemporalFeedbackPlayer>();
 				if (temporalPlayer.CanEmitCollapseVisual()) {
-					WeaponPrefixGlobalItem.SpawnTemporalCollapseEffect(npc.Center, visualMultiplier);
+					TemporalRuntime.SpawnCollapseEffect(npc.Center, visualMultiplier);
+				}
+
+				if (Main.netMode != NetmodeID.Server) {
+					CombatText.NewText(npc.Hitbox, WeaponPrefixVisuals.TemporalCollapseColor, collapseDamage.ToString(), true);
+					SoundEngine.PlaySound(SoundID.Item29, npc.Center);
 				}
 			}
 		}

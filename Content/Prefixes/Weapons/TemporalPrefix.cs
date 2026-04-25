@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -8,17 +9,17 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class TemporalPrefix : WeaponPrefix
 {
-	public const float AttackSpeedMultiplier = 2f;
-	public const float ProjectileSpeedMultiplier = 2f;
-	public const float PressureMax = 100f;
-	public const float BasePressurePerHit = 4f;
-	public const float DamagePressureFactor = 120f;
-	public const float TempoBonusPressure = 2f;
-	public const int TempoBonusWindowTicks = 45;
-	public const float BossPressureMultiplier = 0.65f;
-	public const int FractureDurationTicks = 90;
-	public const int FractureCooldownTicks = 240;
-	public const float ReleaseMultiplier = 1.15f;
+	public static float AttackSpeedMultiplier => PrefixTuningConfig.Instance.TemporalAttackSpeedMultiplier;
+	public static float ProjectileSpeedMultiplier => PrefixTuningConfig.Instance.TemporalProjectileSpeedMultiplier;
+	public static float PressureMax => PrefixTuningConfig.Instance.TemporalPressureMax;
+	public static float BasePressurePerHit => PrefixTuningConfig.Instance.TemporalBasePressurePerHit;
+	public static float DamagePressureFactor => PrefixTuningConfig.Instance.TemporalDamagePressureFactor;
+	public static float TempoBonusPressure => PrefixTuningConfig.Instance.TemporalTempoBonusPressure;
+	public static int TempoBonusWindowTicks => PrefixTuningConfig.Instance.TemporalTempoBonusWindowTicks;
+	public static float BossPressureMultiplier => PrefixTuningConfig.Instance.TemporalBossPressureMultiplier;
+	public static int FractureDurationTicks => PrefixTuningConfig.Instance.TemporalFractureDurationTicks;
+	public static int FractureCooldownTicks => PrefixTuningConfig.Instance.TemporalFractureCooldownTicks;
+	public static float ReleaseMultiplier => PrefixTuningConfig.Instance.TemporalReleaseMultiplier;
 
 	protected override float PrefixRollChance => 0.6f;
 	protected override float PrefixValueMultiplier => 1.5f;
@@ -39,9 +40,9 @@ public sealed class TemporalPrefix : WeaponPrefix
 		ref float manaMult,
 		ref int critBonus)
 	{
-		damageMult *= (1f / AttackSpeedMultiplier);
-		useTimeMult *= (1f / AttackSpeedMultiplier);
-		shootSpeedMult *= ProjectileSpeedMultiplier;
+		damageMult = (1f / AttackSpeedMultiplier);
+		useTimeMult = (1f / AttackSpeedMultiplier);
+		shootSpeedMult = ProjectileSpeedMultiplier;
 	}
 
 	protected override IEnumerable<TooltipLine> GetExtraTooltipLines(Item item)

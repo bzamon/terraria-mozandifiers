@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -8,9 +9,9 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class CatalyticPrefix : WeaponPrefix
 {
-	public const int MarkDurationTicks = 300;
-	public const int MarkArmDelayTicks = 6;
-	public const float ConsumeDamageBonus = 0.35f;
+	public static int MarkDurationTicks => PrefixTuningConfig.Instance.CatalyticMarkDurationTicks;
+	public static int MarkArmDelayTicks => PrefixTuningConfig.Instance.CatalyticMarkArmDelayTicks;
+	public static float ConsumeDamageBonus => PrefixTuningConfig.Instance.CatalyticConsumeDamageBonus;
 
 	protected override float PrefixRollChance => 0.65f;
 	protected override float PrefixValueMultiplier => 1.5f;

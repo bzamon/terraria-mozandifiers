@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -8,10 +9,10 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class StormforgedPrefix : WeaponPrefix
 {
-	public const int MaxChainJumps = 3;
-	public const float ChainProcChance = 0.33f;
-	public const float ChainRangePixels = 160f;
-	public const float ChainDamageDecay = 0.65f;
+	public static int MaxChainJumps => PrefixTuningConfig.Instance.StormforgedMaxChainJumps;
+	public static float ChainProcChance => PrefixTuningConfig.Instance.StormforgedChainProcChance;
+	public static float ChainRangePixels => PrefixTuningConfig.Instance.StormforgedChainRangePixels;
+	public static float ChainDamageDecay => PrefixTuningConfig.Instance.StormforgedChainDamageDecay;
 
 	protected override float PrefixRollChance => 0.7f;
 	protected override float PrefixValueMultiplier => 1.5f;

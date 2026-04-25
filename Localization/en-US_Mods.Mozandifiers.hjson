@@ -8,6 +8,7 @@ Prefixes: {
 
 	AwakenedPrefix: {
 		DisplayName: Awakened
+		DormantDisplayName: Dormant
 		DormantTooltip: Dormant: +{0}% use speed and +{1} critical strike chance
 		BuildTooltip: Sweet-spot sword hits build toward awakening in about {0} seconds of consistent contact
 		AwakenedTooltip: Awakened for {0} seconds: +{1}% damage, +{2}% size, and +{3}% use speed
@@ -81,7 +82,7 @@ Prefixes: {
 
 	SpinboundPrefix: {
 		DisplayName: Spinbound
-		SpinboundTooltip: Fibonacci cadence empowers releases for +{0}% damage and +{1}% crit damage
+		SpinboundTooltip: Valid Spinbound geometry empowers releases for +{0}% damage and +{1}% crit damage; Fibonacci cadence grants +1 Golden Spin tier
 		GoldenSpinTooltip: Golden Spin geometry can amplify the Spinbound payoff up to {0}x
 	}
 
@@ -96,49 +97,1897 @@ Prefixes: {
 
 Configs: {
 	PrefixTuningConfig: {
-		WeaponPrefixTuning: Header
+		DisplayName: Prefix Tuning Config
 
-		FractureIChancePercent: {
-			Label: Fracture I Chance (%)
-			Tooltip: Chance for the first fractured copy to appear on the same frame as the original shot.
+		Headers: {
+			Overview: Modifier Pages
+			PassiveStats: Passive Stats
+			Mechanics: Mechanics
+			Advanced: Advanced
 		}
 
-		FractureIIChancePercent: {
-			Label: Fracture II Chance (%)
-			Tooltip: Chance for a second fractured copy to appear a few frames later if Fracture I succeeded.
+		Attuned: {
+			Label: Attuned
+
+			MaxResonanceStacks: {
+				Label: Max Resonance Stacks
+				Tooltip: Maximum resonance stacks Attuned can build before empowering the next cast.
+			}
+
+			ResonanceDecayTicks: {
+				Label: Resonance Decay (Ticks)
+				Tooltip: How long resonance lasts without casting or qualifying hits.
+			}
+
+			ResonanceHitGainCooldownTicks: {
+				Label: Hit Gain Cooldown (Ticks)
+				Tooltip: Minimum delay between resonance gains from hit-based Attuned triggers.
+			}
+
+			EmpoweredCastShootSpeedPercent: {
+				Label: Empowered Cast Projectile Speed (%)
+				Tooltip: Projectile speed bonus granted to the empowered cast at full resonance.
+			}
+
+			Tooltip: ""
 		}
 
-		FractureIIIChancePercent: {
-			Label: Fracture III Chance (%)
-			Tooltip: Chance for the most unstable fractured copy to appear after Fracture II if the cascade continues.
+		Awakened: {
+			Label: Awakened
+
+			DormantUseSpeedPercent: {
+				Label: Dormant Use Speed (%)
+				Tooltip: Use speed bonus while Awakened is still dormant.
+			}
+
+			DormantCritBonus: {
+				Label: Dormant Crit Bonus
+				Tooltip: Critical strike bonus while Awakened is dormant.
+			}
+
+			AwakenedDamagePercent: {
+				Label: Awakened Damage (%)
+				Tooltip: Damage bonus while fully awakened.
+			}
+
+			AwakenedScalePercent: {
+				Label: Awakened Size (%)
+				Tooltip: Weapon size bonus while fully awakened.
+			}
+
+			AwakenedUseSpeedPercent: {
+				Label: Awakened Use Speed (%)
+				Tooltip: Use speed bonus while fully awakened.
+			}
+
+			SweetSpotKnockbackPercent: {
+				Label: Sweet-Spot Knockback (%)
+				Tooltip: Knockback multiplier applied to awakened sweet-spot hits.
+			}
+
+			DesiredBuildTicks: {
+				Label: Desired Build Time (Ticks)
+				Tooltip: Target time for consistent sweet-spot hits to fully awaken the modifier.
+			}
+
+			AwakenedDurationTicks: {
+				Label: Awakened Duration (Ticks)
+				Tooltip: Duration of the awakened state after the meter fills.
+			}
+
+			RecoveryLockoutTicks: {
+				Label: Recovery Lockout (Ticks)
+				Tooltip: Sealed duration after awakened ends.
+			}
+
+			HpBonusDamageRatioPerThousand: {
+				Label: HP Bonus Damage Ratio (Per Thousand)
+				Tooltip: Bonus damage ratio taken from target max life for awakened sweet-spot hits.
+			}
+
+			MinBonusDamage: {
+				Label: Min Bonus Damage
+				Tooltip: Minimum awakened sweet-spot bonus damage.
+			}
+
+			MaxBonusDamageAgainstNormalEnemies: {
+				Label: Max Bonus Damage vs Normal Enemies
+				Tooltip: Maximum awakened sweet-spot bonus damage against non-boss targets.
+			}
+
+			BossBonusDamageCapRatioPercent: {
+				Label: Boss Damage Cap Ratio (Per Thousand)
+				Tooltip: Per-second boss budget used to cap awakened bonus damage.
+			}
+
+			MinBossBonusDamageCapPerSecond: {
+				Label: Min Boss Cap Per Second
+				Tooltip: Minimum per-second awakened boss damage budget.
+			}
+
+			MaxBossBonusDamageCapPerSecond: {
+				Label: Max Boss Cap Per Second
+				Tooltip: Maximum per-second awakened boss damage budget.
+			}
+
+			BossBonusDamageWindowTicks: {
+				Label: Boss Budget Window (Ticks)
+				Tooltip: Rolling window used for awakened boss bonus-damage tracking.
+			}
+
+			Tooltip: ""
 		}
 
-		FractureIChance: {
-			Tooltip: Fractional value used internally for Fracture I rolls.
-			Label: Fracture I Chance
+		Breaching: {
+			Label: Breaching
+
+			DamagePercent: {
+				Label: Damage (%)
+				Tooltip: Damage multiplier for Breaching weapons.
+			}
+
+			KnockbackPercent: {
+				Label: Knockback (%)
+				Tooltip: Knockback multiplier for Breaching weapons.
+			}
+
+			UseTimePercent: {
+				Label: Use Time (%)
+				Tooltip: Use speed multiplier for Breaching weapons.
+			}
+
+			CritBonus: {
+				Label: Crit Bonus
+				Tooltip: Critical strike adjustment applied by Breaching.
+			}
+
+			ArmorPenetration: {
+				Label: Armor Penetration
+				Tooltip: Armor penetration granted by Breaching.
+			}
+
+			DefenseThreshold: {
+				Label: Defense Threshold
+				Tooltip: Defense value at which Breaching treats a target as resistant.
+			}
+
+			DamageThreshold: {
+				Label: Damage Threshold
+				Tooltip: Hit damage required to count as a heavy Breaching impact.
+			}
+
+			SizePercent: {
+				Label: Heavy Weapon Size (%)
+				Tooltip: Base size percent used when Breaching expands heavy swing weapons.
+			}
+
+			Tooltip: ""
 		}
 
-		FractureIIChance: {
-			Tooltip: Fractional value used internally for Fracture II rolls.
-			Label: Fracture II Chance
+		Catalytic: {
+			Label: Catalytic
+
+			MarkDurationTicks: {
+				Label: Mark Duration (Ticks)
+				Tooltip: How long Catalytic marks stay active before expiring.
+			}
+
+			MarkArmDelayTicks: {
+				Label: Mark Arm Delay (Ticks)
+				Tooltip: Delay before a fresh mark can be consumed.
+			}
+
+			ConsumeDamagePercent: {
+				Label: Consume Damage (%)
+				Tooltip: Bonus damage dealt when consuming a Catalytic mark.
+			}
+
+			Tooltip: ""
 		}
 
-		FractureIIIChance: {
-			Tooltip: Fractional value used internally for Fracture III rolls.
-			Label: Fracture III Chance
+		Deadeye: {
+			Label: Deadeye
+
+			ReadyIntervalTicks: {
+				Label: Ready Interval (Ticks)
+				Tooltip: Time spent holding a valid Deadeye weapon before a Deadeye Shot becomes ready.
+			}
+
+			StationaryReadyTicks: {
+				Label: Stationary Ready Time (Ticks)
+				Tooltip: Time spent standing still to ready a Deadeye Shot early.
+			}
+
+			ProjectileAssignmentLockoutTicks: {
+				Label: Projectile Assignment Lockout (Ticks)
+				Tooltip: Short lockout that keeps only one projectile from consuming each ready Deadeye Shot.
+			}
+
+			StationaryTolerancePixels: {
+				Label: Stationary Tolerance (Pixels)
+				Tooltip: Maximum movement allowed before Deadeye stops counting the player as stationary.
+			}
+
+			ShotVelocityPercent: {
+				Label: Deadeye Shot Velocity (%)
+				Tooltip: Projectile speed multiplier for a charged Deadeye Shot.
+			}
+
+			ShotCritChanceBonus: {
+				Label: Deadeye Shot Crit Bonus
+				Tooltip: Extra critical chance granted to a Deadeye Shot.
+			}
+
+			ShotCritDamagePercent: {
+				Label: Deadeye Shot Crit Damage (%)
+				Tooltip: Extra crit damage granted to a Deadeye Shot.
+			}
+
+			BurstDamagePercent: {
+				Label: Burst Damage (%)
+				Tooltip: Fraction of the final critical hit used for Deadeye's leafy burst.
+			}
+
+			BurstRadiusPixels: {
+				Label: Burst Radius (Pixels)
+				Tooltip: Radius of the Deadeye crit burst.
+			}
+
+			BossBurstDamagePercent: {
+				Label: Boss Burst Damage (%)
+				Tooltip: Damage multiplier used when the Deadeye burst hits bosses.
+			}
+
+			Tooltip: ""
+		}
+
+		Desperate: {
+			Label: Desperate
+
+			MaxDamagePercent: {
+				Label: Max Damage (%)
+				Tooltip: Maximum missing-life damage bonus granted by Desperate.
+			}
+
+			CritBonus: {
+				Label: Crit Bonus
+				Tooltip: Critical strike bonus applied by Desperate.
+			}
+
+			MinorLifeThresholdPercent: {
+				Label: Minor Threshold (%)
+				Tooltip: Life percentage that activates the minor Desperate threshold.
+			}
+
+			SevereLifeThresholdPercent: {
+				Label: Severe Threshold (%)
+				Tooltip: Life percentage that activates the severe Desperate threshold.
+			}
+
+			CriticalLifeThresholdPercent: {
+				Label: Critical Threshold (%)
+				Tooltip: Life percentage that activates the critical Desperate threshold.
+			}
+
+			SurgeCooldownTicks: {
+				Label: Surge Cooldown (Ticks)
+				Tooltip: Cooldown between critical-life Desperate surge hits.
+			}
+
+			SurgeDamagePercent: {
+				Label: Surge Damage (%)
+				Tooltip: Bonus damage applied to Desperate surge hits.
+			}
+
+			Tooltip: ""
+		}
+
+		Fractured: {
+			Label: Fractured
+
+			FractureIChancePercent: {
+				Label: Fracture I Chance (%)
+				Tooltip: Chance for the first fractured copy to appear on the same frame as the original shot.
+			}
+
+			FractureIIChancePercent: {
+				Label: Fracture II Chance (%)
+				Tooltip: Chance for the second fractured copy to appear if Fracture I succeeds.
+			}
+
+			FractureIIIChancePercent: {
+				Label: Fracture III Chance (%)
+				Tooltip: Chance for the most unstable fractured copy to appear if the cascade continues.
+			}
+
+			FractureIDamagePercent: {
+				Label: Fracture I Damage (%)
+				Tooltip: Damage dealt by the first fractured copy.
+			}
+
+			FractureIIDamagePercent: {
+				Label: Fracture II Damage (%)
+				Tooltip: Damage dealt by the second fractured copy.
+			}
+
+			FractureIIIDamagePercent: {
+				Label: Fracture III Damage (%)
+				Tooltip: Damage dealt by the third fractured copy.
+			}
+
+			FractureIAngleVarianceDegrees: {
+				Label: Fracture I Angle Variance
+				Tooltip: Maximum angular deviation for the first fractured copy.
+			}
+
+			FractureIIAngleVarianceDegrees: {
+				Label: Fracture II Angle Variance
+				Tooltip: Maximum angular deviation for the second fractured copy.
+			}
+
+			FractureIIIAngleVarianceDegrees: {
+				Label: Fracture III Angle Variance
+				Tooltip: Maximum angular deviation for the third fractured copy.
+			}
+
+			FractureIIDelayMinFrames: {
+				Label: Fracture II Min Delay
+				Tooltip: Minimum delay in frames before spawning the second fractured copy.
+			}
+
+			FractureIIDelayMaxFrames: {
+				Label: Fracture II Max Delay
+				Tooltip: Maximum delay in frames before spawning the second fractured copy.
+			}
+
+			FractureIIIDelayMinFrames: {
+				Label: Fracture III Min Delay
+				Tooltip: Minimum delay in frames before spawning the third fractured copy.
+			}
+
+			FractureIIIDelayMaxFrames: {
+				Label: Fracture III Max Delay
+				Tooltip: Maximum delay in frames before spawning the third fractured copy.
+			}
+
+			Tooltip: ""
+		}
+
+		Radiant: {
+			Label: Radiant
+
+			OnFireDurationTicks: {
+				Label: On Fire Duration (Ticks)
+				Tooltip: How long Radiant applies On Fire! on hit.
+			}
+
+			Tooltip: ""
+		}
+
+		Shifting: {
+			Label: Shifting
+
+			ShiftDurationTicks: {
+				Label: Shift Duration (Ticks)
+				Tooltip: How long each simulated modifier lasts before Shifting rerolls in combat.
+			}
+
+			CombatWindowTicks: {
+				Label: Combat Window (Ticks)
+				Tooltip: How long Shifting remains active after combat actions.
+			}
+
+			StrengthPercent: {
+				Label: Simulation Strength (%)
+				Tooltip: Strength multiplier applied to simulated modifiers.
+			}
+
+			Tooltip: ""
+		}
+
+		Skirmishing: {
+			Label: Skirmishing
+
+			WindowTicks: {
+				Label: Skirmish Window (Ticks)
+				Tooltip: Time after a hit during which Skirmishing mobility and follow-up effects stay active.
+			}
+
+			MoveSpeedPercent: {
+				Label: Move Speed (%)
+				Tooltip: Movement speed bonus during the skirmish window.
+			}
+
+			RunAccelerationPercent: {
+				Label: Run Acceleration (%)
+				Tooltip: Run acceleration multiplier during the skirmish window.
+			}
+
+			MaxRunSpeedBonus: {
+				Label: Max Run Speed Bonus
+				Tooltip: Additional max run speed granted during the skirmish window.
+			}
+
+			FollowUpShootSpeedPercent: {
+				Label: Follow-Up Projectile Speed (%)
+				Tooltip: Projectile speed multiplier granted to follow-up shots during the skirmish window.
+			}
+
+			FollowUpCritDamagePercent: {
+				Label: Follow-Up Crit Damage (%)
+				Tooltip: Crit damage bonus granted to follow-up shots during the skirmish window.
+			}
+
+			Tooltip: ""
+		}
+
+		Spinbound: {
+			Label: Spinbound
+
+			EmpoweredDamagePercent: {
+				Label: Empowered Damage (%)
+				Tooltip: Bonus damage from a valid Spinbound release.
+			}
+
+			EmpoweredCritDamagePercent: {
+				Label: Empowered Crit Damage (%)
+				Tooltip: Bonus crit damage from a valid Spinbound release.
+			}
+
+			StabilizationStrengthPerThousand: {
+				Label: Stabilization Strength (Per Thousand)
+				Tooltip: How strongly Spinbound smooths projectile rotation toward a valid release.
+			}
+
+			VelocityRatioTolerancePercent: {
+				Label: Velocity Ratio Tolerance (%)
+				Tooltip: Allowed deviation from the target velocity ratio for Spinbound geometry checks.
+			}
+
+			AngleToleranceDegrees: {
+				Label: Angle Tolerance
+				Tooltip: Broad angular tolerance for Spinbound geometry.
+			}
+
+			AnglePrecisionToleranceDegrees: {
+				Label: Angle Precision Tolerance
+				Tooltip: Tight angular tolerance used for the highest Spinbound precision checks.
+			}
+
+			SpeedRatioTolerancePercent: {
+				Label: Speed Ratio Tolerance (%)
+				Tooltip: Allowed deviation from the target speed ratio for Spinbound geometry.
+			}
+
+			Tooltip: ""
+		}
+
+		Stormforged: {
+			Label: Stormforged
+
+			ChainProcChancePercent: {
+				Label: Chain Chance (%)
+				Tooltip: Chance for Stormforged to arc to another target.
+			}
+
+			MaxChainJumps: {
+				Label: Max Chain Jumps
+				Tooltip: Maximum number of extra targets Stormforged can jump to.
+			}
+
+			ChainRangePixels: {
+				Label: Chain Range (Pixels)
+				Tooltip: Search radius for the next Stormforged target.
+			}
+
+			ChainDamageDecayPercent: {
+				Label: Chain Damage Decay (%)
+				Tooltip: Damage multiplier kept on each Stormforged chain jump.
+			}
+
+			Tooltip: ""
+		}
+
+		Temporal: {
+			Label: Temporal
+
+			AttackSpeedPercent: {
+				Label: Attack Speed (%)
+				Tooltip: Attack speed multiplier applied by Temporal.
+			}
+
+			ProjectileSpeedPercent: {
+				Label: Projectile Speed (%)
+				Tooltip: Projectile speed multiplier applied by Temporal.
+			}
+
+			PressureMax: {
+				Label: Pressure Max
+				Tooltip: Pressure required to fracture a target.
+			}
+
+			BasePressurePerHit: {
+				Label: Base Pressure Per Hit
+				Tooltip: Flat Time Fracture Pressure added by each qualifying hit.
+			}
+
+			DamagePressureFactor: {
+				Label: Damage Pressure Factor
+				Tooltip: Extra Time Fracture Pressure gained from resolved hit damage relative to target life.
+			}
+
+			TempoBonusPressure: {
+				Label: Tempo Bonus Pressure
+				Tooltip: Bonus pressure when the same target is hit again within the tempo window.
+			}
+
+			TempoBonusWindowTicks: {
+				Label: Tempo Window (Ticks)
+				Tooltip: Window for the repeated-hit tempo bonus.
+			}
+
+			BossPressureMultiplierPercent: {
+				Label: Boss Pressure Multiplier (%)
+				Tooltip: Pressure multiplier applied against bosses.
+			}
+
+			FractureDurationTicks: {
+				Label: Fracture Duration (Ticks)
+				Tooltip: Duration of the Time Fracture state before collapse.
+			}
+
+			FractureCooldownTicks: {
+				Label: Fracture Cooldown (Ticks)
+				Tooltip: Cooldown before the same target can be fractured again.
+			}
+
+			ReleaseMultiplierPercent: {
+				Label: Collapse Release (%)
+				Tooltip: Multiplier applied to stored Temporal damage when the fracture collapses.
+			}
+
+			Tooltip: ""
+		}
+
+		Vampiric: {
+			Label: Vampiric
+
+			LifeStealPercent: {
+				Label: Life Steal (%)
+				Tooltip: Fraction of qualifying damage returned as healing.
+			}
+
+			ManaRestorePercent: {
+				Label: Mana Restore from Mana Cost (%)
+				Tooltip: Fraction of mana cost restored on qualifying magic hits.
+			}
+
+			MaxManaRestorePerHit: {
+				Label: Max Mana Restore Per Hit
+				Tooltip: Maximum mana restored by a single qualifying hit.
+			}
+
+			HealCapPerSecond: {
+				Label: Heal Cap Per Second
+				Tooltip: Maximum healing Vampiric can grant per second.
+			}
+
+			ManaCapPerSecond: {
+				Label: Mana Cap Per Second
+				Tooltip: Maximum mana Vampiric can restore per second.
+			}
+
+			CriticalFeedPercent: {
+				Label: Critical Feed (%)
+				Tooltip: Feed multiplier applied when Vampiric lands a critical hit.
+			}
+
+			WeakenedThresholdPercent: {
+				Label: Weakened Threshold (%)
+				Tooltip: Life percentage below which targets count as Weakened prey.
+			}
+
+			BloodiedThresholdPercent: {
+				Label: Bloodied Threshold (%)
+				Tooltip: Life percentage below which targets count as Bloodied prey.
+			}
+
+			CriticalThresholdPercent: {
+				Label: Critical Threshold (%)
+				Tooltip: Life percentage below which targets count as Critical prey.
+			}
+
+			WeakenedFeedPercent: {
+				Label: Weakened Feed (%)
+				Tooltip: Feed multiplier against Weakened prey.
+			}
+
+			BloodiedFeedPercent: {
+				Label: Bloodied Feed (%)
+				Tooltip: Feed multiplier against Bloodied prey.
+			}
+
+			CriticalFeedStatePercent: {
+				Label: Critical Feed (%)
+				Tooltip: Feed multiplier against Critical prey.
+			}
+
+			FrenzyDurationTicks: {
+				Label: Frenzy Duration (Ticks)
+				Tooltip: Duration of Vampiric Frenzy after it triggers.
+			}
+
+			FrenzyRetriggerCooldownTicks: {
+				Label: Frenzy Retrigger Cooldown (Ticks)
+				Tooltip: Cooldown before Frenzy can trigger again.
+			}
+
+			FrenzyAttackSpeedPercent: {
+				Label: Frenzy Attack Speed (%)
+				Tooltip: Maximum attack speed bonus granted by Frenzy.
+			}
+
+			FrenzyCapPercent: {
+				Label: Frenzy Cap Multiplier (%)
+				Tooltip: Multiplier applied to Vampiric sustain caps during Frenzy.
+			}
+
+			FrenzyCritBonusAgainstWeakened: {
+				Label: Frenzy Crit vs Weakened
+				Tooltip: Extra crit against Weakened prey during Frenzy.
+			}
+
+			FrenzyCritBonusAgainstBloodied: {
+				Label: Frenzy Crit vs Bloodied
+				Tooltip: Extra crit against Bloodied prey during Frenzy.
+			}
+
+			FrenzyCritBonusAgainstCritical: {
+				Label: Frenzy Crit vs Critical
+				Tooltip: Extra crit against Critical prey during Frenzy.
+			}
+
+			Tooltip: ""
+		}
+
+		AttunedMaxResonanceStacks: {
+			Label: Attuned Max Resonance Stacks
+			Tooltip: ""
+		}
+
+		AttunedResonanceDecayTicks: {
+			Label: Attuned Resonance Decay Ticks
+			Tooltip: ""
+		}
+
+		AttunedResonanceHitGainCooldownTicks: {
+			Label: Attuned Resonance Hit Gain Cooldown Ticks
+			Tooltip: ""
+		}
+
+		AttunedEmpoweredCastShootSpeedMultiplier: {
+			Label: Attuned Empowered Cast Shoot Speed Multiplier
+			Tooltip: ""
+		}
+
+		AwakenedDormantUseSpeedBonus: {
+			Label: Awakened Dormant Use Speed Bonus
+			Tooltip: ""
+		}
+
+		AwakenedDormantCritBonus: {
+			Label: Awakened Dormant Crit Bonus
+			Tooltip: ""
+		}
+
+		AwakenedDamageBonus: {
+			Label: Awakened Damage Bonus
+			Tooltip: ""
+		}
+
+		AwakenedScaleBonus: {
+			Label: Awakened Scale Bonus
+			Tooltip: ""
+		}
+
+		AwakenedUseSpeedBonus: {
+			Label: Awakened Use Speed Bonus
+			Tooltip: ""
+		}
+
+		AwakenedSweetSpotKnockbackMultiplier: {
+			Label: Awakened Sweet Spot Knockback Multiplier
+			Tooltip: ""
+		}
+
+		AwakenedDesiredBuildTicks: {
+			Label: Awakened Desired Build Ticks
+			Tooltip: ""
+		}
+
+		AwakenedDurationTicks: {
+			Label: Awakened Duration Ticks
+			Tooltip: ""
+		}
+
+		AwakenedRecoveryLockoutTicks: {
+			Label: Awakened Recovery Lockout Ticks
+			Tooltip: ""
+		}
+
+		AwakenedHpBonusDamageRatio: {
+			Label: Awakened Hp Bonus Damage Ratio
+			Tooltip: ""
+		}
+
+		AwakenedMinBonusDamage: {
+			Label: Awakened Min Bonus Damage
+			Tooltip: ""
+		}
+
+		AwakenedMaxBonusDamageAgainstNormalEnemies: {
+			Label: Awakened Max Bonus Damage Against Normal Enemies
+			Tooltip: ""
+		}
+
+		AwakenedBossBonusDamageCapRatioPerSecond: {
+			Label: Awakened Boss Bonus Damage Cap Ratio Per Second
+			Tooltip: ""
+		}
+
+		AwakenedMinBossBonusDamageCapPerSecond: {
+			Label: Awakened Min Boss Bonus Damage Cap Per Second
+			Tooltip: ""
+		}
+
+		AwakenedMaxBossBonusDamageCapPerSecond: {
+			Label: Awakened Max Boss Bonus Damage Cap Per Second
+			Tooltip: ""
+		}
+
+		AwakenedBossBonusDamageWindowTicks: {
+			Label: Awakened Boss Bonus Damage Window Ticks
+			Tooltip: ""
+		}
+
+		BreachingDamageMultiplier: {
+			Label: Breaching Damage Multiplier
+			Tooltip: ""
+		}
+
+		BreachingKnockbackMultiplier: {
+			Label: Breaching Knockback Multiplier
+			Tooltip: ""
+		}
+
+		BreachingUseTimeMultiplierValue: {
+			Label: Breaching Use Time Multiplier Value
+			Tooltip: ""
+		}
+
+		BreachingCritBonus: {
+			Label: Breaching Crit Bonus
+			Tooltip: ""
+		}
+
+		BreachingArmorPenetrationValue: {
+			Label: Breaching Armor Penetration Value
+			Tooltip: ""
+		}
+
+		BreachingDefenseThreshold: {
+			Label: Breaching Defense Threshold
+			Tooltip: ""
+		}
+
+		BreachingDamageThreshold: {
+			Label: Breaching Damage Threshold
+			Tooltip: ""
 		}
 
 		BreachingSizePercent: {
-			Label: Siege Weapon Size (%)
-			Tooltip: Final size multiplier used when Breaching expands heavy swing weapons. 130 means they are 30% larger before Breaching tuning.
+			Label: Breaching Size Percent
+			Tooltip: ""
 		}
 
-		DisplayName: Prefix Tuning Config
-		Headers.WeaponPrefixTuning: Weapon Prefix Tuning Header
-
 		BreachingScaleMultiplier: {
-			Tooltip: Final scale multiplier source used internally by Breaching's heavy melee size bonus.
-			Label: Siege Size Multiplier
+			Label: Breaching Scale Multiplier
+			Tooltip: ""
+		}
+
+		CatalyticMarkDurationTicks: {
+			Label: Catalytic Mark Duration Ticks
+			Tooltip: ""
+		}
+
+		CatalyticMarkArmDelayTicks: {
+			Label: Catalytic Mark Arm Delay Ticks
+			Tooltip: ""
+		}
+
+		CatalyticConsumeDamageBonus: {
+			Label: Catalytic Consume Damage Bonus
+			Tooltip: ""
+		}
+
+		DeadeyeReadyIntervalTicks: {
+			Label: Deadeye Ready Interval Ticks
+			Tooltip: ""
+		}
+
+		DeadeyeStationaryReadyTicks: {
+			Label: Deadeye Stationary Ready Ticks
+			Tooltip: ""
+		}
+
+		DeadeyeProjectileAssignmentLockoutTicks: {
+			Label: Deadeye Projectile Assignment Lockout Ticks
+			Tooltip: ""
+		}
+
+		DeadeyeStationaryTolerancePixels: {
+			Label: Deadeye Stationary Tolerance Pixels
+			Tooltip: ""
+		}
+
+		DeadeyeShotVelocityMultiplier: {
+			Label: Deadeye Shot Velocity Multiplier
+			Tooltip: ""
+		}
+
+		DeadeyeShotCritChanceBonus: {
+			Label: Deadeye Shot Crit Chance Bonus
+			Tooltip: ""
+		}
+
+		DeadeyeShotCritDamageBonus: {
+			Label: Deadeye Shot Crit Damage Bonus
+			Tooltip: ""
+		}
+
+		DeadeyeCriticalBurstDamageRatio: {
+			Label: Deadeye Critical Burst Damage Ratio
+			Tooltip: ""
+		}
+
+		DeadeyeCriticalBurstRadiusPixels: {
+			Label: Deadeye Critical Burst Radius Pixels
+			Tooltip: ""
+		}
+
+		DeadeyeBossBurstDamageMultiplier: {
+			Label: Deadeye Boss Burst Damage Multiplier
+			Tooltip: ""
+		}
+
+		DesperateMaxDamageBonus: {
+			Label: Desperate Max Damage Bonus
+			Tooltip: ""
+		}
+
+		DesperateCritBonus: {
+			Label: Desperate Crit Bonus
+			Tooltip: ""
+		}
+
+		DesperateMinorLifeThreshold: {
+			Label: Desperate Minor Life Threshold
+			Tooltip: ""
+		}
+
+		DesperateSevereLifeThreshold: {
+			Label: Desperate Severe Life Threshold
+			Tooltip: ""
+		}
+
+		DesperateCriticalLifeThreshold: {
+			Label: Desperate Critical Life Threshold
+			Tooltip: ""
+		}
+
+		DesperateSurgeCooldownTicks: {
+			Label: Desperate Surge Cooldown Ticks
+			Tooltip: ""
+		}
+
+		DesperateSurgeDamageBonus: {
+			Label: Desperate Surge Damage Bonus
+			Tooltip: ""
+		}
+
+		FractureIChancePercent: {
+			Label: Fracture I Chance Percent
+			Tooltip: ""
+		}
+
+		FractureIChance: {
+			Label: Fracture I Chance
+			Tooltip: ""
+		}
+
+		FractureIIChancePercent: {
+			Label: Fracture I I Chance Percent
+			Tooltip: ""
+		}
+
+		FractureIIChance: {
+			Label: Fracture I I Chance
+			Tooltip: ""
+		}
+
+		FractureIIIChancePercent: {
+			Label: Fracture I I I Chance Percent
+			Tooltip: ""
+		}
+
+		FractureIIIChance: {
+			Label: Fracture I I I Chance
+			Tooltip: ""
+		}
+
+		FractureIDamageMultiplier: {
+			Label: Fracture I Damage Multiplier
+			Tooltip: ""
+		}
+
+		FractureIIDamageMultiplier: {
+			Label: Fracture I I Damage Multiplier
+			Tooltip: ""
+		}
+
+		FractureIIIDamageMultiplier: {
+			Label: Fracture I I I Damage Multiplier
+			Tooltip: ""
+		}
+
+		FractureIAngleVarianceDegrees: {
+			Label: Fracture I Angle Variance Degrees
+			Tooltip: ""
+		}
+
+		FractureIIAngleVarianceDegrees: {
+			Label: Fracture I I Angle Variance Degrees
+			Tooltip: ""
+		}
+
+		FractureIIIAngleVarianceDegrees: {
+			Label: Fracture I I I Angle Variance Degrees
+			Tooltip: ""
+		}
+
+		FractureIIDelayMinFrames: {
+			Label: Fracture I I Delay Min Frames
+			Tooltip: ""
+		}
+
+		FractureIIDelayMaxFrames: {
+			Label: Fracture I I Delay Max Frames
+			Tooltip: ""
+		}
+
+		FractureIIIDelayMinFrames: {
+			Label: Fracture I I I Delay Min Frames
+			Tooltip: ""
+		}
+
+		FractureIIIDelayMaxFrames: {
+			Label: Fracture I I I Delay Max Frames
+			Tooltip: ""
+		}
+
+		RadiantOnFireDurationTicks: {
+			Label: Radiant On Fire Duration Ticks
+			Tooltip: ""
+		}
+
+		ShiftingShiftDurationTicks: {
+			Label: Shifting Shift Duration Ticks
+			Tooltip: ""
+		}
+
+		ShiftingCombatWindowTicks: {
+			Label: Shifting Combat Window Ticks
+			Tooltip: ""
+		}
+
+		ShiftingStrengthMultiplier: {
+			Label: Shifting Strength Multiplier
+			Tooltip: ""
+		}
+
+		SkirmishWindowTicks: {
+			Label: Skirmish Window Ticks
+			Tooltip: ""
+		}
+
+		SkirmishingMobilityMoveSpeedBonus: {
+			Label: Skirmishing Mobility Move Speed Bonus
+			Tooltip: ""
+		}
+
+		SkirmishingRunAccelerationMultiplier: {
+			Label: Skirmishing Run Acceleration Multiplier
+			Tooltip: ""
+		}
+
+		SkirmishingMaxRunSpeedBonus: {
+			Label: Skirmishing Max Run Speed Bonus
+			Tooltip: ""
+		}
+
+		SkirmishingFollowUpShootSpeedMultiplier: {
+			Label: Skirmishing Follow Up Shoot Speed Multiplier
+			Tooltip: ""
+		}
+
+		SkirmishingFollowUpCritDamageBonus: {
+			Label: Skirmishing Follow Up Crit Damage Bonus
+			Tooltip: ""
+		}
+
+		SpinboundEmpoweredDamageBonus: {
+			Label: Spinbound Empowered Damage Bonus
+			Tooltip: ""
+		}
+
+		SpinboundEmpoweredCritDamageBonus: {
+			Label: Spinbound Empowered Crit Damage Bonus
+			Tooltip: ""
+		}
+
+		SpinboundStabilizationStrength: {
+			Label: Spinbound Stabilization Strength
+			Tooltip: ""
+		}
+
+		SpinboundVelocityRatioTolerance: {
+			Label: Spinbound Velocity Ratio Tolerance
+			Tooltip: ""
+		}
+
+		SpinboundAngleToleranceDegrees: {
+			Label: Spinbound Angle Tolerance Degrees
+			Tooltip: ""
+		}
+
+		SpinboundAnglePrecisionToleranceDegrees: {
+			Label: Spinbound Angle Precision Tolerance Degrees
+			Tooltip: ""
+		}
+
+		SpinboundSpeedRatioTolerance: {
+			Label: Spinbound Speed Ratio Tolerance
+			Tooltip: ""
+		}
+
+		StormforgedMaxChainJumps: {
+			Label: Stormforged Max Chain Jumps
+			Tooltip: ""
+		}
+
+		StormforgedChainProcChance: {
+			Label: Stormforged Chain Proc Chance
+			Tooltip: ""
+		}
+
+		StormforgedChainRangePixels: {
+			Label: Stormforged Chain Range Pixels
+			Tooltip: ""
+		}
+
+		StormforgedChainDamageDecay: {
+			Label: Stormforged Chain Damage Decay
+			Tooltip: ""
+		}
+
+		TemporalAttackSpeedMultiplier: {
+			Label: Temporal Attack Speed Multiplier
+			Tooltip: ""
+		}
+
+		TemporalProjectileSpeedMultiplier: {
+			Label: Temporal Projectile Speed Multiplier
+			Tooltip: ""
+		}
+
+		TemporalPressureMax: {
+			Label: Temporal Pressure Max
+			Tooltip: ""
+		}
+
+		TemporalBasePressurePerHit: {
+			Label: Temporal Base Pressure Per Hit
+			Tooltip: ""
+		}
+
+		TemporalDamagePressureFactor: {
+			Label: Temporal Damage Pressure Factor
+			Tooltip: ""
+		}
+
+		TemporalTempoBonusPressure: {
+			Label: Temporal Tempo Bonus Pressure
+			Tooltip: ""
+		}
+
+		TemporalTempoBonusWindowTicks: {
+			Label: Temporal Tempo Bonus Window Ticks
+			Tooltip: ""
+		}
+
+		TemporalBossPressureMultiplier: {
+			Label: Temporal Boss Pressure Multiplier
+			Tooltip: ""
+		}
+
+		TemporalFractureDurationTicks: {
+			Label: Temporal Fracture Duration Ticks
+			Tooltip: ""
+		}
+
+		TemporalFractureCooldownTicks: {
+			Label: Temporal Fracture Cooldown Ticks
+			Tooltip: ""
+		}
+
+		TemporalReleaseMultiplier: {
+			Label: Temporal Release Multiplier
+			Tooltip: ""
+		}
+
+		VampiricLifeStealMultiplier: {
+			Label: Vampiric Life Steal Multiplier
+			Tooltip: ""
+		}
+
+		VampiricManaRestoreFromManaCost: {
+			Label: Vampiric Mana Restore From Mana Cost
+			Tooltip: ""
+		}
+
+		VampiricMaxManaRestorePerHit: {
+			Label: Vampiric Max Mana Restore Per Hit
+			Tooltip: ""
+		}
+
+		VampiricBaseHealCapPerSecond: {
+			Label: Vampiric Base Heal Cap Per Second
+			Tooltip: ""
+		}
+
+		VampiricBaseManaRestorePerSecond: {
+			Label: Vampiric Base Mana Restore Per Second
+			Tooltip: ""
+		}
+
+		VampiricCriticalFeedMultiplier: {
+			Label: Vampiric Critical Feed Multiplier
+			Tooltip: ""
+		}
+
+		VampiricWeakenedPreyThreshold: {
+			Label: Vampiric Weakened Prey Threshold
+			Tooltip: ""
+		}
+
+		VampiricBloodiedPreyThreshold: {
+			Label: Vampiric Bloodied Prey Threshold
+			Tooltip: ""
+		}
+
+		VampiricCriticalPreyThreshold: {
+			Label: Vampiric Critical Prey Threshold
+			Tooltip: ""
+		}
+
+		VampiricWeakenedFeedMultiplier: {
+			Label: Vampiric Weakened Feed Multiplier
+			Tooltip: ""
+		}
+
+		VampiricBloodiedFeedMultiplier: {
+			Label: Vampiric Bloodied Feed Multiplier
+			Tooltip: ""
+		}
+
+		VampiricCriticalFeedStateMultiplier: {
+			Label: Vampiric Critical Feed State Multiplier
+			Tooltip: ""
+		}
+
+		VampiricFrenzyDurationTicks: {
+			Label: Vampiric Frenzy Duration Ticks
+			Tooltip: ""
+		}
+
+		VampiricFrenzyRetriggerCooldownTicks: {
+			Label: Vampiric Frenzy Retrigger Cooldown Ticks
+			Tooltip: ""
+		}
+
+		VampiricFrenzyAttackSpeedBonus: {
+			Label: Vampiric Frenzy Attack Speed Bonus
+			Tooltip: ""
+		}
+
+		VampiricFrenzyCapMultiplier: {
+			Label: Vampiric Frenzy Cap Multiplier
+			Tooltip: ""
+		}
+
+		VampiricFrenzyCritBonusAgainstWeakened: {
+			Label: Vampiric Frenzy Crit Bonus Against Weakened
+			Tooltip: ""
+		}
+
+		VampiricFrenzyCritBonusAgainstBloodied: {
+			Label: Vampiric Frenzy Crit Bonus Against Bloodied
+			Tooltip: ""
+		}
+
+		VampiricFrenzyCritBonusAgainstCritical: {
+			Label: Vampiric Frenzy Crit Bonus Against Critical
+			Tooltip: ""
+		}
+
+		LegacyEchoChancePercent: {
+			Label: Legacy Echo Chance Percent
+			Tooltip: ""
+		}
+	}
+
+	AttunedSettings: {
+		Tooltip: ""
+		Headers.Mechanics: Mechanics Header
+
+		MaxResonanceStacks: {
+			Label: Max Resonance Stacks
+			Tooltip: ""
+		}
+
+		ResonanceDecayTicks: {
+			Label: Resonance Decay Ticks
+			Tooltip: ""
+		}
+
+		ResonanceHitGainCooldownTicks: {
+			Label: Resonance Hit Gain Cooldown Ticks
+			Tooltip: ""
+		}
+
+		EmpoweredCastShootSpeedPercent: {
+			Label: Empowered Cast Shoot Speed Percent
+			Tooltip: ""
+		}
+	}
+
+	AwakenedSettings: {
+		Tooltip: ""
+
+		Headers: {
+			PassiveStats: Passive Stats Header
+			Mechanics: Mechanics Header
+			Advanced: Advanced Header
+		}
+
+		DormantUseSpeedPercent: {
+			Label: Dormant Use Speed Percent
+			Tooltip: ""
+		}
+
+		DormantCritBonus: {
+			Label: Dormant Crit Bonus
+			Tooltip: ""
+		}
+
+		AwakenedDamagePercent: {
+			Label: Awakened Damage Percent
+			Tooltip: ""
+		}
+
+		AwakenedScalePercent: {
+			Label: Awakened Scale Percent
+			Tooltip: ""
+		}
+
+		AwakenedUseSpeedPercent: {
+			Label: Awakened Use Speed Percent
+			Tooltip: ""
+		}
+
+		SweetSpotKnockbackPercent: {
+			Label: Sweet Spot Knockback Percent
+			Tooltip: ""
+		}
+
+		DesiredBuildTicks: {
+			Label: Desired Build Ticks
+			Tooltip: ""
+		}
+
+		AwakenedDurationTicks: {
+			Label: Awakened Duration Ticks
+			Tooltip: ""
+		}
+
+		RecoveryLockoutTicks: {
+			Label: Recovery Lockout Ticks
+			Tooltip: ""
+		}
+
+		HpBonusDamageRatioPerThousand: {
+			Label: Hp Bonus Damage Ratio Per Thousand
+			Tooltip: ""
+		}
+
+		MinBonusDamage: {
+			Label: Min Bonus Damage
+			Tooltip: ""
+		}
+
+		MaxBonusDamageAgainstNormalEnemies: {
+			Label: Max Bonus Damage Against Normal Enemies
+			Tooltip: ""
+		}
+
+		BossBonusDamageCapRatioPercent: {
+			Label: Boss Bonus Damage Cap Ratio Percent
+			Tooltip: ""
+		}
+
+		MinBossBonusDamageCapPerSecond: {
+			Label: Min Boss Bonus Damage Cap Per Second
+			Tooltip: ""
+		}
+
+		MaxBossBonusDamageCapPerSecond: {
+			Label: Max Boss Bonus Damage Cap Per Second
+			Tooltip: ""
+		}
+
+		BossBonusDamageWindowTicks: {
+			Label: Boss Bonus Damage Window Ticks
+			Tooltip: ""
+		}
+	}
+
+	BreachingSettings: {
+		Tooltip: ""
+
+		Headers: {
+			PassiveStats: Passive Stats Header
+			Mechanics: Mechanics Header
+		}
+
+		DamagePercent: {
+			Label: Damage Percent
+			Tooltip: ""
+		}
+
+		KnockbackPercent: {
+			Label: Knockback Percent
+			Tooltip: ""
+		}
+
+		UseTimePercent: {
+			Label: Use Time Percent
+			Tooltip: ""
+		}
+
+		CritBonus: {
+			Label: Crit Bonus
+			Tooltip: ""
+		}
+
+		ArmorPenetration: {
+			Label: Armor Penetration
+			Tooltip: ""
+		}
+
+		DefenseThreshold: {
+			Label: Defense Threshold
+			Tooltip: ""
+		}
+
+		DamageThreshold: {
+			Label: Damage Threshold
+			Tooltip: ""
+		}
+
+		SizePercent: {
+			Label: Size Percent
+			Tooltip: ""
+		}
+	}
+
+	CatalyticSettings: {
+		Tooltip: ""
+		Headers.Mechanics: Mechanics Header
+
+		MarkDurationTicks: {
+			Label: Mark Duration Ticks
+			Tooltip: ""
+		}
+
+		MarkArmDelayTicks: {
+			Label: Mark Arm Delay Ticks
+			Tooltip: ""
+		}
+
+		ConsumeDamagePercent: {
+			Label: Consume Damage Percent
+			Tooltip: ""
+		}
+	}
+
+	DeadeyeSettings: {
+		Tooltip: ""
+		Headers.Mechanics: Mechanics Header
+
+		ReadyIntervalTicks: {
+			Label: Ready Interval Ticks
+			Tooltip: ""
+		}
+
+		StationaryReadyTicks: {
+			Label: Stationary Ready Ticks
+			Tooltip: ""
+		}
+
+		ProjectileAssignmentLockoutTicks: {
+			Label: Projectile Assignment Lockout Ticks
+			Tooltip: ""
+		}
+
+		StationaryTolerancePixels: {
+			Label: Stationary Tolerance Pixels
+			Tooltip: ""
+		}
+
+		ShotVelocityPercent: {
+			Label: Shot Velocity Percent
+			Tooltip: ""
+		}
+
+		ShotCritChanceBonus: {
+			Label: Shot Crit Chance Bonus
+			Tooltip: ""
+		}
+
+		ShotCritDamagePercent: {
+			Label: Shot Crit Damage Percent
+			Tooltip: ""
+		}
+
+		BurstDamagePercent: {
+			Label: Burst Damage Percent
+			Tooltip: ""
+		}
+
+		BurstRadiusPixels: {
+			Label: Burst Radius Pixels
+			Tooltip: ""
+		}
+
+		BossBurstDamagePercent: {
+			Label: Boss Burst Damage Percent
+			Tooltip: ""
+		}
+	}
+
+	DesperateSettings: {
+		Tooltip: ""
+
+		Headers: {
+			PassiveStats: Passive Stats Header
+			Mechanics: Mechanics Header
+		}
+
+		MaxDamagePercent: {
+			Label: Max Damage Percent
+			Tooltip: ""
+		}
+
+		CritBonus: {
+			Label: Crit Bonus
+			Tooltip: ""
+		}
+
+		MinorLifeThresholdPercent: {
+			Label: Minor Life Threshold Percent
+			Tooltip: ""
+		}
+
+		SevereLifeThresholdPercent: {
+			Label: Severe Life Threshold Percent
+			Tooltip: ""
+		}
+
+		CriticalLifeThresholdPercent: {
+			Label: Critical Life Threshold Percent
+			Tooltip: ""
+		}
+
+		SurgeCooldownTicks: {
+			Label: Surge Cooldown Ticks
+			Tooltip: ""
+		}
+
+		SurgeDamagePercent: {
+			Label: Surge Damage Percent
+			Tooltip: ""
+		}
+	}
+
+	FracturedSettings: {
+		Tooltip: ""
+
+		Headers: {
+			Mechanics: Mechanics Header
+			Advanced: Advanced Header
+		}
+
+		FractureIChancePercent: {
+			Label: Fracture I Chance Percent
+			Tooltip: ""
+		}
+
+		FractureIIChancePercent: {
+			Label: Fracture I I Chance Percent
+			Tooltip: ""
+		}
+
+		FractureIIIChancePercent: {
+			Label: Fracture I I I Chance Percent
+			Tooltip: ""
+		}
+
+		FractureIDamagePercent: {
+			Label: Fracture I Damage Percent
+			Tooltip: ""
+		}
+
+		FractureIIDamagePercent: {
+			Label: Fracture I I Damage Percent
+			Tooltip: ""
+		}
+
+		FractureIIIDamagePercent: {
+			Label: Fracture I I I Damage Percent
+			Tooltip: ""
+		}
+
+		FractureIAngleVarianceDegrees: {
+			Label: Fracture I Angle Variance Degrees
+			Tooltip: ""
+		}
+
+		FractureIIAngleVarianceDegrees: {
+			Label: Fracture I I Angle Variance Degrees
+			Tooltip: ""
+		}
+
+		FractureIIIAngleVarianceDegrees: {
+			Label: Fracture I I I Angle Variance Degrees
+			Tooltip: ""
+		}
+
+		FractureIIDelayMinFrames: {
+			Label: Fracture I I Delay Min Frames
+			Tooltip: ""
+		}
+
+		FractureIIDelayMaxFrames: {
+			Label: Fracture I I Delay Max Frames
+			Tooltip: ""
+		}
+
+		FractureIIIDelayMinFrames: {
+			Label: Fracture I I I Delay Min Frames
+			Tooltip: ""
+		}
+
+		FractureIIIDelayMaxFrames: {
+			Label: Fracture I I I Delay Max Frames
+			Tooltip: ""
+		}
+	}
+
+	RadiantSettings: {
+		Tooltip: ""
+		Headers.Mechanics: Mechanics Header
+
+		OnFireDurationTicks: {
+			Label: On Fire Duration Ticks
+			Tooltip: ""
+		}
+	}
+
+	ShiftingSettings: {
+		Tooltip: ""
+		Headers.Mechanics: Mechanics Header
+
+		ShiftDurationTicks: {
+			Label: Shift Duration Ticks
+			Tooltip: ""
+		}
+
+		CombatWindowTicks: {
+			Label: Combat Window Ticks
+			Tooltip: ""
+		}
+
+		StrengthPercent: {
+			Label: Strength Percent
+			Tooltip: ""
+		}
+	}
+
+	SkirmishingSettings: {
+		Tooltip: ""
+		Headers.Mechanics: Mechanics Header
+
+		WindowTicks: {
+			Label: Window Ticks
+			Tooltip: ""
+		}
+
+		MoveSpeedPercent: {
+			Label: Move Speed Percent
+			Tooltip: ""
+		}
+
+		RunAccelerationPercent: {
+			Label: Run Acceleration Percent
+			Tooltip: ""
+		}
+
+		MaxRunSpeedBonus: {
+			Label: Max Run Speed Bonus
+			Tooltip: ""
+		}
+
+		FollowUpShootSpeedPercent: {
+			Label: Follow Up Shoot Speed Percent
+			Tooltip: ""
+		}
+
+		FollowUpCritDamagePercent: {
+			Label: Follow Up Crit Damage Percent
+			Tooltip: ""
+		}
+	}
+
+	SpinboundSettings: {
+		Tooltip: ""
+
+		Headers: {
+			Mechanics: Mechanics Header
+			Advanced: Advanced Header
+		}
+
+		EmpoweredDamagePercent: {
+			Label: Empowered Damage Percent
+			Tooltip: ""
+		}
+
+		EmpoweredCritDamagePercent: {
+			Label: Empowered Crit Damage Percent
+			Tooltip: ""
+		}
+
+		StabilizationStrengthPerThousand: {
+			Label: Stabilization Strength Per Thousand
+			Tooltip: ""
+		}
+
+		VelocityRatioTolerancePercent: {
+			Label: Velocity Ratio Tolerance Percent
+			Tooltip: ""
+		}
+
+		AngleToleranceDegrees: {
+			Label: Angle Tolerance Degrees
+			Tooltip: ""
+		}
+
+		AnglePrecisionToleranceDegrees: {
+			Label: Angle Precision Tolerance Degrees
+			Tooltip: ""
+		}
+
+		SpeedRatioTolerancePercent: {
+			Label: Speed Ratio Tolerance Percent
+			Tooltip: ""
+		}
+	}
+
+	StormforgedSettings: {
+		Tooltip: ""
+		Headers.Mechanics: Mechanics Header
+
+		ChainProcChancePercent: {
+			Label: Chain Proc Chance Percent
+			Tooltip: ""
+		}
+
+		MaxChainJumps: {
+			Label: Max Chain Jumps
+			Tooltip: ""
+		}
+
+		ChainRangePixels: {
+			Label: Chain Range Pixels
+			Tooltip: ""
+		}
+
+		ChainDamageDecayPercent: {
+			Label: Chain Damage Decay Percent
+			Tooltip: ""
+		}
+	}
+
+	TemporalSettings: {
+		Tooltip: ""
+
+		Headers: {
+			PassiveStats: Passive Stats Header
+			Mechanics: Mechanics Header
+		}
+
+		AttackSpeedPercent: {
+			Label: Attack Speed Percent
+			Tooltip: ""
+		}
+
+		ProjectileSpeedPercent: {
+			Label: Projectile Speed Percent
+			Tooltip: ""
+		}
+
+		PressureMax: {
+			Label: Pressure Max
+			Tooltip: ""
+		}
+
+		BasePressurePerHit: {
+			Label: Base Pressure Per Hit
+			Tooltip: ""
+		}
+
+		DamagePressureFactor: {
+			Label: Damage Pressure Factor
+			Tooltip: ""
+		}
+
+		TempoBonusPressure: {
+			Label: Tempo Bonus Pressure
+			Tooltip: ""
+		}
+
+		TempoBonusWindowTicks: {
+			Label: Tempo Bonus Window Ticks
+			Tooltip: ""
+		}
+
+		BossPressureMultiplierPercent: {
+			Label: Boss Pressure Multiplier Percent
+			Tooltip: ""
+		}
+
+		FractureDurationTicks: {
+			Label: Fracture Duration Ticks
+			Tooltip: ""
+		}
+
+		FractureCooldownTicks: {
+			Label: Fracture Cooldown Ticks
+			Tooltip: ""
+		}
+
+		ReleaseMultiplierPercent: {
+			Label: Release Multiplier Percent
+			Tooltip: ""
+		}
+	}
+
+	VampiricSettings: {
+		Tooltip: ""
+		Headers.Mechanics: Mechanics Header
+
+		LifeStealPercent: {
+			Label: Life Steal Percent
+			Tooltip: ""
+		}
+
+		ManaRestorePercent: {
+			Label: Mana Restore Percent
+			Tooltip: ""
+		}
+
+		MaxManaRestorePerHit: {
+			Label: Max Mana Restore Per Hit
+			Tooltip: ""
+		}
+
+		HealCapPerSecond: {
+			Label: Heal Cap Per Second
+			Tooltip: ""
+		}
+
+		ManaCapPerSecond: {
+			Label: Mana Cap Per Second
+			Tooltip: ""
+		}
+
+		CriticalFeedPercent: {
+			Label: Critical Feed Percent
+			Tooltip: ""
+		}
+
+		WeakenedThresholdPercent: {
+			Label: Weakened Threshold Percent
+			Tooltip: ""
+		}
+
+		BloodiedThresholdPercent: {
+			Label: Bloodied Threshold Percent
+			Tooltip: ""
+		}
+
+		CriticalThresholdPercent: {
+			Label: Critical Threshold Percent
+			Tooltip: ""
+		}
+
+		WeakenedFeedPercent: {
+			Label: Weakened Feed Percent
+			Tooltip: ""
+		}
+
+		BloodiedFeedPercent: {
+			Label: Bloodied Feed Percent
+			Tooltip: ""
+		}
+
+		CriticalFeedStatePercent: {
+			Label: Critical Feed State Percent
+			Tooltip: ""
+		}
+
+		FrenzyDurationTicks: {
+			Label: Frenzy Duration Ticks
+			Tooltip: ""
+		}
+
+		FrenzyRetriggerCooldownTicks: {
+			Label: Frenzy Retrigger Cooldown Ticks
+			Tooltip: ""
+		}
+
+		FrenzyAttackSpeedPercent: {
+			Label: Frenzy Attack Speed Percent
+			Tooltip: ""
+		}
+
+		FrenzyCapPercent: {
+			Label: Frenzy Cap Percent
+			Tooltip: ""
+		}
+
+		FrenzyCritBonusAgainstWeakened: {
+			Label: Frenzy Crit Bonus Against Weakened
+			Tooltip: ""
+		}
+
+		FrenzyCritBonusAgainstBloodied: {
+			Label: Frenzy Crit Bonus Against Bloodied
+			Tooltip: ""
+		}
+
+		FrenzyCritBonusAgainstCritical: {
+			Label: Frenzy Crit Bonus Against Critical
+			Tooltip: ""
 		}
 	}
 }
@@ -146,9 +1995,20 @@ Configs: {
 Projectiles: {
 	AmeliaProjectile.DisplayName: Amelia Projectile
 	LudovicaProjectile.DisplayName: Ludovica Projectile
+	DeadeyeBurstProjectile.DisplayName: Deadeye Burst Projectile
 }
 
 Buffs: {
+	AwakenedBuff: {
+		DisplayName: Awakened
+		Description: The blade is fully awakened
+	}
+
+	SealedDebuff: {
+		DisplayName: Sealed
+		Description: Awakening is sealed until recovery ends
+	}
+
 	AmeliaBuff: {
 		DisplayName: Amelia
 		Description: Amelia is following you!

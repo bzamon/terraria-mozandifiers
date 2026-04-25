@@ -12,10 +12,12 @@ Adds custom weapon prefixes for Terraria with clear tradeoffs and configurable t
 - Spinbound empowers Fibonacci-timed shots and can trigger Golden Spin amplification
 - Shifting periodically rewrites itself into stronger temporary modifier states while in combat
 - Breaching now carries the heavy siege size bonus on slow swing weapons
+- Temporal now fractures targets, stores damage, and releases a delayed collapse
+- Awakened uses a visible sword sweet-spot, timed awakening, and recovery seal state
 - 4 server-side mod config sliders for Fracture I/II/III chance and Breaching heavy size
 
 [b]Current scope:[/b]
 Focused on weapon prefixes, with Amelia and Ludovica included as bonus vanity pets. Accessory and armor prefixes are not implemented.
 
 [b]Version:[/b]
-0.3
+0.4

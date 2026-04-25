@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -8,15 +9,15 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class ShiftingPrefix : WeaponPrefix
 {
-	public const int ShiftDurationTicks = 600;
-	public const int CombatWindowTicks = 300;
-	public const float ShiftingStrengthMultiplier = 1.5f;
+	public static int ShiftDurationTicks => PrefixTuningConfig.Instance.ShiftingShiftDurationTicks;
+	public static int CombatWindowTicks => PrefixTuningConfig.Instance.ShiftingCombatWindowTicks;
+	public static float ShiftingStrengthMultiplier => PrefixTuningConfig.Instance.ShiftingStrengthMultiplier;
 
 	public override PrefixCategory Category => PrefixCategory.AnyWeapon;
 
 	public override bool CanRoll(Item item)
 	{
-		return ShiftingSimulationCatalog.TryGetWeaponMode(item, out _);
+		return ShiftingSimulationPools.TryGetWeaponMode(item, out _);
 	}
 
 	protected override IEnumerable<TooltipLine> GetExtraTooltipLines(Item item)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -16,25 +17,26 @@ internal enum AwakenedState : byte
 
 public sealed class AwakenedPrefix : WeaponPrefix
 {
-	public const float DormantUseSpeedBonus = 0.06f;
-	public const int DormantCritBonus = 3;
-	public const float AwakenedDamageBonus = 0.12f;
-	public const float AwakenedScaleBonus = 0.1f;
-	public const float AwakenedUseSpeedBonus = 0.1f;
-	public const int DesiredAwakenBuildTicks = 300;
-	public const int AwakenedDurationTicks = 600;
-	public const int RecoveryLockoutTicks = 1200;
+	public static float DormantUseSpeedBonus => PrefixTuningConfig.Instance.AwakenedDormantUseSpeedBonus;
+	public static int DormantCritBonus => PrefixTuningConfig.Instance.AwakenedDormantCritBonus;
+	public static float AwakenedDamageBonus => PrefixTuningConfig.Instance.AwakenedDamageBonus;
+	public static float AwakenedScaleBonus => PrefixTuningConfig.Instance.AwakenedScaleBonus;
+	public static float AwakenedUseSpeedBonus => PrefixTuningConfig.Instance.AwakenedUseSpeedBonus;
+	public static float AwakenedSweetSpotKnockbackMultiplier => PrefixTuningConfig.Instance.AwakenedSweetSpotKnockbackMultiplier;
+	public static int DesiredAwakenBuildTicks => PrefixTuningConfig.Instance.AwakenedDesiredBuildTicks;
+	public static int AwakenedDurationTicks => PrefixTuningConfig.Instance.AwakenedDurationTicks;
+	public static int RecoveryLockoutTicks => PrefixTuningConfig.Instance.AwakenedRecoveryLockoutTicks;
 	public const float SweetSpotStartNormalized = 0.72f;
 	public const float SweetSpotThicknessMultiplier = 0.45f;
 	public const float MinSweetSpotThicknessPixels = 16f;
 	public const float BladeLengthPaddingPixels = 12f;
-	public const float HpBonusDamageRatio = 0.006f;
-	public const int MinAwakenedBonusDamage = 8;
-	public const int MaxAwakenedBonusDamageAgainstNormalEnemies = 120;
-	public const float BossBonusDamageCapRatioPerSecond = 0.012f;
-	public const int MinBossBonusDamageCapPerSecond = 60;
-	public const int MaxBossBonusDamageCapPerSecond = 300;
-	public const int BossBonusDamageWindowTicks = 60;
+	public static float HpBonusDamageRatio => PrefixTuningConfig.Instance.AwakenedHpBonusDamageRatio;
+	public static int MinAwakenedBonusDamage => PrefixTuningConfig.Instance.AwakenedMinBonusDamage;
+	public static int MaxAwakenedBonusDamageAgainstNormalEnemies => PrefixTuningConfig.Instance.AwakenedMaxBonusDamageAgainstNormalEnemies;
+	public static float BossBonusDamageCapRatioPerSecond => PrefixTuningConfig.Instance.AwakenedBossBonusDamageCapRatioPerSecond;
+	public static int MinBossBonusDamageCapPerSecond => PrefixTuningConfig.Instance.AwakenedMinBossBonusDamageCapPerSecond;
+	public static int MaxBossBonusDamageCapPerSecond => PrefixTuningConfig.Instance.AwakenedMaxBossBonusDamageCapPerSecond;
+	public static int BossBonusDamageWindowTicks => PrefixTuningConfig.Instance.AwakenedBossBonusDamageWindowTicks;
 
 	protected override float PrefixRollChance => 0.7f;
 	protected override float PrefixValueMultiplier => 1.5f;

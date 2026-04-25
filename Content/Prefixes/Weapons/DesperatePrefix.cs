@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -16,13 +17,13 @@ internal enum DesperateThresholdState : byte
 
 public sealed class DesperatePrefix : WeaponPrefix
 {
-	public const float MaxDamageBonus = 0.8f;
-	public const int CritBonus = 5;
-	public const float MinorLifeThreshold = 0.5f;
-	public const float SevereLifeThreshold = 0.25f;
-	public const float CriticalLifeThreshold = 0.125f;
-	public const int SurgeCooldownTicks = 180;
-	public const float SurgeDamageBonus = 0.2f;
+	public static float MaxDamageBonus => PrefixTuningConfig.Instance.DesperateMaxDamageBonus;
+	public static int CritBonus => PrefixTuningConfig.Instance.DesperateCritBonus;
+	public static float MinorLifeThreshold => PrefixTuningConfig.Instance.DesperateMinorLifeThreshold;
+	public static float SevereLifeThreshold => PrefixTuningConfig.Instance.DesperateSevereLifeThreshold;
+	public static float CriticalLifeThreshold => PrefixTuningConfig.Instance.DesperateCriticalLifeThreshold;
+	public static int SurgeCooldownTicks => PrefixTuningConfig.Instance.DesperateSurgeCooldownTicks;
+	public static float SurgeDamageBonus => PrefixTuningConfig.Instance.DesperateSurgeDamageBonus;
 
 	protected override float PrefixRollChance => 0.75f;
 	protected override float PrefixValueMultiplier => 1.4f;

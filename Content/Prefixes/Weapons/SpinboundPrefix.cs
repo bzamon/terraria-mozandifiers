@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -9,19 +10,19 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 public sealed class SpinboundPrefix : WeaponPrefix
 {
 	public static readonly int[] FibonacciShotGaps = [1, 1, 2, 3, 5, 8, 13];
-	public const float EmpoweredDamageBonus = 0.2f;
-	public const float EmpoweredCritDamageBonus = 0.1f;
-	public const float StabilizationStrength = 0.035f;
+	public static float EmpoweredDamageBonus => PrefixTuningConfig.Instance.SpinboundEmpoweredDamageBonus;
+	public static float EmpoweredCritDamageBonus => PrefixTuningConfig.Instance.SpinboundEmpoweredCritDamageBonus;
+	public static float StabilizationStrength => PrefixTuningConfig.Instance.SpinboundStabilizationStrength;
 	public const int MaxGoldenSpinMultiplier = 5;
 	public const int MaxGoldenSpinTier = 5;
 	public const float GoldenRatio = 1.618034f;
 	public const float InverseGoldenRatio = 0.618034f;
 	public const float LowGoldenAngleDegrees = 31.72f;
 	public const float HighGoldenAngleDegrees = 58.28f;
-	public const float VelocityRatioTolerance = 0.25f;
-	public const float AngleToleranceDegrees = 8f;
-	public const float AnglePrecisionToleranceDegrees = 3f;
-	public const float SpeedRatioTolerance = 0.35f;
+	public static float VelocityRatioTolerance => PrefixTuningConfig.Instance.SpinboundVelocityRatioTolerance;
+	public static float AngleToleranceDegrees => PrefixTuningConfig.Instance.SpinboundAngleToleranceDegrees;
+	public static float AnglePrecisionToleranceDegrees => PrefixTuningConfig.Instance.SpinboundAnglePrecisionToleranceDegrees;
+	public static float SpeedRatioTolerance => PrefixTuningConfig.Instance.SpinboundSpeedRatioTolerance;
 
 	protected override int ArmorPenetrationBonus => 6;
 	protected override float PrefixRollChance => 0.65f;

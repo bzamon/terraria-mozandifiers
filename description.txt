@@ -4,3 +4,4 @@ Current version includes:
 - 14 weapon prefixes: Fractured, Attuned, Awakened, Breaching, Skirmishing, Vampiric, Radiant, Stormforged, Temporal, Desperate, Catalytic, Deadeye, Spinbound, and Shifting
 - 2 bonus vanity dog pets: Amelia and Ludovica
 - 4 server-side mod config sliders: Fracture I/II/III chance and Breaching heavy size
+- Recent reworks for Fractured, Deadeye, Temporal, Vampiric, Skirmishing, and Awakened

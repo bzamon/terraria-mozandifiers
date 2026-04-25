@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -8,10 +9,10 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class AttunedPrefix : WeaponPrefix
 {
-	public const int MaxResonanceStacks = 4;
-	public const int ResonanceDecayTicks = 150;
-	public const int ResonanceHitGainCooldownTicks = 12;
-	public const float EmpoweredCastShootSpeedMultiplier = 1.15f;
+	public static int MaxResonanceStacks => PrefixTuningConfig.Instance.AttunedMaxResonanceStacks;
+	public static int ResonanceDecayTicks => PrefixTuningConfig.Instance.AttunedResonanceDecayTicks;
+	public static int ResonanceHitGainCooldownTicks => PrefixTuningConfig.Instance.AttunedResonanceHitGainCooldownTicks;
+	public static float EmpoweredCastShootSpeedMultiplier => PrefixTuningConfig.Instance.AttunedEmpoweredCastShootSpeedMultiplier;
 
 	protected override float PrefixRollChance => 1.05f;
 	protected override float PrefixValueMultiplier => 1.35f;

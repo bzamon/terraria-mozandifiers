@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -8,12 +9,12 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class SkirmishingPrefix : WeaponPrefix
 {
-	public const int SkirmishWindowTicks = 90;
-	public const float MobilityMoveSpeedBonus = 0.12f;
-	public const float MobilityRunAccelerationMultiplier = 1.12f;
-	public const float MobilityMaxRunSpeedBonus = 0.5f;
-	public const float FollowUpShootSpeedMultiplier = 1.12f;
-	public const float FollowUpCritDamageBonus = 0.12f;
+	public static int SkirmishWindowTicks => PrefixTuningConfig.Instance.SkirmishWindowTicks;
+	public static float MobilityMoveSpeedBonus => PrefixTuningConfig.Instance.SkirmishingMobilityMoveSpeedBonus;
+	public static float MobilityRunAccelerationMultiplier => PrefixTuningConfig.Instance.SkirmishingRunAccelerationMultiplier;
+	public static float MobilityMaxRunSpeedBonus => PrefixTuningConfig.Instance.SkirmishingMaxRunSpeedBonus;
+	public static float FollowUpShootSpeedMultiplier => PrefixTuningConfig.Instance.SkirmishingFollowUpShootSpeedMultiplier;
+	public static float FollowUpCritDamageBonus => PrefixTuningConfig.Instance.SkirmishingFollowUpCritDamageBonus;
 
 	protected override float PrefixRollChance => 0.95f;
 	protected override float PrefixValueMultiplier => 1.3f;

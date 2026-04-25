@@ -11,13 +11,13 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class BreachingPrefix : WeaponPrefix
 {
-	public const float DamageMultiplier = 1.2f;
-	public const float KnockbackMultiplier = 1.18f;
-	public const float UseTimeMultiplierValue = 1.24f;
-	public const int CritBonus = -4;
-	public const int ArmorPenetrationValue = 12;
-	public const int BreachDefenseThreshold = 12;
-	public const int BreachDamageThreshold = 40;
+	public static float DamageMultiplier => PrefixTuningConfig.Instance.BreachingDamageMultiplier;
+	public static float KnockbackMultiplier => PrefixTuningConfig.Instance.BreachingKnockbackMultiplier;
+	public static float UseTimeMultiplierValue => PrefixTuningConfig.Instance.BreachingUseTimeMultiplierValue;
+	public static int CritBonus => PrefixTuningConfig.Instance.BreachingCritBonus;
+	public static int ArmorPenetrationValue => PrefixTuningConfig.Instance.BreachingArmorPenetrationValue;
+	public static int BreachDefenseThreshold => PrefixTuningConfig.Instance.BreachingDefenseThreshold;
+	public static int BreachDamageThreshold => PrefixTuningConfig.Instance.BreachingDamageThreshold;
 
 	protected override float PrefixRollChance => 0.85f;
 	protected override float PrefixValueMultiplier => 1.4f;

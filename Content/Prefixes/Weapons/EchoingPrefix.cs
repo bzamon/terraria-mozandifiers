@@ -9,16 +9,16 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class EchoingPrefix : WeaponPrefix
 {
-	public const float FractureIDamageMultiplier = 0.45f;
-	public const float FractureIIDamageMultiplier = 0.35f;
-	public const float FractureIIIDamageMultiplier = 0.25f;
-	public const float FractureIAngleVarianceDegrees = 2f;
-	public const float FractureIIAngleVarianceDegrees = 4f;
-	public const float FractureIIIAngleVarianceDegrees = 6f;
-	public const int FractureIIDelayMinFrames = 1;
-	public const int FractureIIDelayMaxFrames = 3;
-	public const int FractureIIIDelayMinFrames = 2;
-	public const int FractureIIIDelayMaxFrames = 5;
+	public static float FractureIDamageMultiplier => PrefixTuningConfig.Instance.FractureIDamageMultiplier;
+	public static float FractureIIDamageMultiplier => PrefixTuningConfig.Instance.FractureIIDamageMultiplier;
+	public static float FractureIIIDamageMultiplier => PrefixTuningConfig.Instance.FractureIIIDamageMultiplier;
+	public static float FractureIAngleVarianceDegrees => PrefixTuningConfig.Instance.FractureIAngleVarianceDegrees;
+	public static float FractureIIAngleVarianceDegrees => PrefixTuningConfig.Instance.FractureIIAngleVarianceDegrees;
+	public static float FractureIIIAngleVarianceDegrees => PrefixTuningConfig.Instance.FractureIIIAngleVarianceDegrees;
+	public static int FractureIIDelayMinFrames => PrefixTuningConfig.Instance.FractureIIDelayMinFrames;
+	public static int FractureIIDelayMaxFrames => PrefixTuningConfig.Instance.FractureIIDelayMaxFrames;
+	public static int FractureIIIDelayMinFrames => PrefixTuningConfig.Instance.FractureIIIDelayMinFrames;
+	public static int FractureIIIDelayMaxFrames => PrefixTuningConfig.Instance.FractureIIIDelayMaxFrames;
 
 	protected override float PrefixRollChance => 0.7f;
 	protected override float PrefixValueMultiplier => 1.55f;

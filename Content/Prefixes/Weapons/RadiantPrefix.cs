@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mozandifiers.Common.Config;
 using Mozandifiers.Content.Prefixes.Common;
 using Terraria;
 using Terraria.Localization;
@@ -8,7 +9,7 @@ namespace Mozandifiers.Content.Prefixes.Weapons;
 
 public sealed class RadiantPrefix : WeaponPrefix
 {
-	public const int OnFireDurationTicks = 180;
+	public static int OnFireDurationTicks => PrefixTuningConfig.Instance.RadiantOnFireDurationTicks;
 
 	protected override float PrefixRollChance => 0.9f;
 	protected override float PrefixValueMultiplier => 1.35f;

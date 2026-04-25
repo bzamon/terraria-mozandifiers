@@ -50,7 +50,7 @@ public sealed class SpinboundPlayer : ModPlayer
 			return false;
 		}
 
-		bool triggered = RegisterSpinboundShot(item, shifted);
+		bool cadenceBonusTriggered = RegisterSpinboundShot(item, shifted);
 		int cadenceKey = GetCadenceKey(item.type, shifted);
 		if (!spinboundShotContextsByItemType.TryGetValue(cadenceKey, out Queue<SpinboundShotContext> contexts)) {
 			contexts = [];
@@ -59,15 +59,15 @@ public sealed class SpinboundPlayer : ModPlayer
 
 		contexts.Enqueue(new SpinboundShotContext {
 			Velocity = velocity,
-			Triggered = triggered
+			CadenceBonusTriggered = cadenceBonusTriggered
 		});
-		return triggered;
+		return cadenceBonusTriggered;
 	}
 
-	public bool TryConsumeSpinboundShotContext(Item item, bool shifted, out Vector2 velocity, out bool triggered)
+	public bool TryConsumeSpinboundShotContext(Item item, bool shifted, out Vector2 velocity, out bool cadenceBonusTriggered)
 	{
 		velocity = Vector2.Zero;
-		triggered = false;
+		cadenceBonusTriggered = false;
 		if (item == null || item.IsAir) {
 			return false;
 		}
@@ -80,7 +80,7 @@ public sealed class SpinboundPlayer : ModPlayer
 
 		SpinboundShotContext context = contexts.Dequeue();
 		velocity = context.Velocity;
-		triggered = context.Triggered;
+		cadenceBonusTriggered = context.CadenceBonusTriggered;
 		return true;
 	}
 
@@ -98,6 +98,6 @@ public sealed class SpinboundPlayer : ModPlayer
 	private struct SpinboundShotContext
 	{
 		public Vector2 Velocity { get; set; }
-		public bool Triggered { get; set; }
+		public bool CadenceBonusTriggered { get; set; }
 	}
 }
